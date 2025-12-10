@@ -26,7 +26,7 @@ function App() {
         <CartProvider>
           <Header />
           
-          <div style={{ minHeight: '70vh' }}>
+          <main className="main-content" style={{ minHeight: '70vh' }}>
             <Routes>
               <Route path="/" element={<HomePage />} />
               <Route path="/catalogo" element={<CatalogPage />} />
@@ -38,7 +38,7 @@ function App() {
 
               <Route path="*" element={<NotFoundPage />} />
             </Routes>
-          </div>
+          </main>
 
           <Footer />
           <CartModal />
