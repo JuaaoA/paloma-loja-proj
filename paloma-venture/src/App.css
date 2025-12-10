@@ -183,7 +183,7 @@ header > *:last-child {
 /* --- GRID DE PRODUTOS --- */
 .products-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
   gap: 2.5rem;
 }
 
@@ -1324,7 +1324,7 @@ button.add-btn:hover {
   padding-bottom: 40px;
 
   width: 100%;
-  max-width: 1280px;
+  max-width: 1580px;
   margin: 0 auto;
   box-sizing: border-box;
 }
