@@ -3,6 +3,8 @@ import { Mail, Phone, MapPin, Send } from 'lucide-react';
 import Breadcrumbs from '../components/Breadcrumbs';
 import { useToast } from '../contexts/ToastContext';
 
+import './Style/Institucional.css'; // Importa o CSS específico da PolicyPage
+
 const ContactPage = () => {
   const { showToast } = useToast();
   useEffect(() => { window.scrollTo(0, 0); }, []);

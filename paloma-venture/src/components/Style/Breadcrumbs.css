@@ -1,0 +1,50 @@
+/* --- BREADCRUMBS --- */
+.breadcrumbs {
+  padding: 15px 0;
+  margin-bottom: 20px;
+  font-size: 0.85rem;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.breadcrumb-item {
+  display: flex;
+  align-items: center;
+}
+
+.breadcrumb-separator {
+  margin: 0 8px;
+  color: #cbd5e1;
+}
+
+.breadcrumb-link {
+  color: #64748b;
+  text-decoration: none;
+  transition: color 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.breadcrumb-link:hover {
+  color: var(--primary);
+  text-decoration: underline;
+}
+
+.breadcrumb-text.active {
+  color: var(--primary); /* Ou preto, se preferir */
+  font-weight: 600;
+  cursor: default;
+}
+
+/* Responsivo: Se o nome do produto for muito grande no celular */
+@media (max-width: 480px) {
+  .breadcrumb-text.active {
+    max-width: 150px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis; /* Corta com "..." */
+  }
+}

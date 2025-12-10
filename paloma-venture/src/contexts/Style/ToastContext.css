@@ -1,0 +1,53 @@
+/* --- TOAST NOTIFICATION --- */
+.toast-container {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-100px); /* Começa escondido pra cima */
+  background: white;
+  padding: 12px 20px;
+  border-radius: 50px; /* Pílula */
+  box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  z-index: 2000; /* Em cima de TUDO, até do modal */
+  opacity: 0;
+  transition: all 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55); /* Efeito elástico */
+  min-width: 300px;
+  max-width: 90vw;
+}
+
+.toast-container.show {
+  transform: translateX(-50%) translateY(0); /* Desce para a tela */
+  opacity: 1;
+}
+
+/* Tipos de Toast */
+.toast-container.success { border-left: 5px solid #22c55e; }
+.toast-container.error { border-left: 5px solid #ef4444; }
+
+.toast-container.success svg { color: #22c55e; }
+.toast-container.error svg { color: #ef4444; }
+
+.toast-content {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  font-weight: 500;
+  font-size: 0.95rem;
+}
+
+.toast-close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #94a3b8;
+  padding: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.toast-close:hover { color: var(--text-dark); }

@@ -1,0 +1,94 @@
+/* --- Modal do Carrinho (Com Animação) --- */
+
+/* Fundo Escuro (Overlay) */
+.cart-overlay {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background: rgba(0, 31, 91, 0.6); /* Azul marinho com transparência */
+  z-index: 1000;
+  backdrop-filter: blur(2px);
+  
+  /* Estados Iniciais (Escondido) */
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none; /* Impede cliques quando fechado */
+  transition: all 0.3s ease-in-out; /* Animação suave */
+  
+  /* Flex para alinhar o modal à direita */
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* O Estado "Aberto" do Overlay */
+.cart-overlay.open {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: all;
+}
+
+/* A Caixa Branca do Carrinho */
+.cart-modal {
+  background: var(--bg-card, #ffffff);
+  width: 100%;
+  max-width: 450px;
+  height: 100%; /* Ocupa altura total */
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: -5px 0 15px rgba(0,0,0,0.1);
+
+  /* Estado Inicial (Fora da tela para a direita) */
+  transform: translateX(100%);
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1); /* Efeito elástico suave */
+
+  box-sizing: border-box;
+}
+
+/* O Estado "Aberto" da Caixa */
+.cart-overlay.open .cart-modal {
+  transform: translateX(0); /* Volta para o lugar original */
+}
+
+/* --- Itens internos (Mesma coisa de antes) --- */
+.cart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #f4f7f9;
+}
+
+.cart-header h2 { 
+    color: var(--primary, #001f5b); 
+    margin: 0; 
+}
+
+.cart-items {
+    flex: 1;
+    overflow-y: auto;
+    /* Scrollbar bonita */
+    scrollbar-width: thin;
+    scrollbar-color: var(--primary) #f0f0f0;
+}
+
+.cart-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #f4f7f9;
+  padding: 15px 0;
+}
+
+.cart-total {
+  margin-top: auto;
+  padding-top: 20px;
+  border-top: 2px solid #f4f7f9;
+  font-size: 1.5rem;
+  font-weight: bold;
+  text-align: right;
+  color: var(--primary, #001f5b);
+}

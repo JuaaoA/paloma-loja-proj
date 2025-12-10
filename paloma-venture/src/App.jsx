@@ -1,6 +1,8 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+
 import './App.css';
+import './components/Style/ProductCard.css';
 
 // Imports organizados
 import { CartProvider } from './contexts/CartContext';

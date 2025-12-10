@@ -1,6 +1,8 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { CheckCircle, AlertCircle, X } from 'lucide-react';
 
+import './Style/ToastContext.css'; // Importa o CSS específico do Toast
+
 const ToastContext = createContext();
 
 export const ToastProvider = ({ children }) => {

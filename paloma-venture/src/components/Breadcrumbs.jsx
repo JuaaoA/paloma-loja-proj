@@ -3,6 +3,8 @@ import { Link, useLocation } from 'react-router-dom';
 import { ChevronRight, Home } from 'lucide-react';
 import { PRODUCTS } from '../data/data';
 
+import './Style/Breadcrumbs.css'; // Importa o CSS específico dos Breadcrumbs
+
 const Breadcrumbs = () => {
   const location = useLocation();
   const pathnames = location.pathname.split('/').filter((x) => x);

@@ -6,6 +6,8 @@ import HeroSlider from '../components/HeroSlider';
 import CategoryGrid from '../components/CategoryGrid'; // O seu Grid novo
 import Loading from '../components/Loading';
 
+import './Style/HomePage.css'; // Importa o CSS específico da HomePage
+
 const HomePage = () => {
   const navigate = useNavigate();
   

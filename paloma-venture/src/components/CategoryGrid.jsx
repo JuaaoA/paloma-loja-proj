@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom';
 import { Tag, Sparkles, Layers } from 'lucide-react'; // Ícones ilustrativos
 import { categories } from '../data/data';
 
+import './Style/CategoryGrid.css'; // Importa o CSS específico do CategoryGrid
+
 const CategoryGrid = () => {
   return (
     <section className="category-grid-section" style={{marginTop: '40px', marginBottom: '40px'}}>

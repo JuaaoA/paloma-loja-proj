@@ -9,6 +9,8 @@ import { useToast } from '../contexts/ToastContext.jsx';
 import Breadcrumbs from '../components/Breadcrumbs.jsx';
 import NotFoundPage from './NotFoundPage.jsx';
 
+import './Style/ProductPage.css'; // Importa o CSS específico da ProductPage
+
 const ProductPage = () => {
     const { id } = useParams();
     const { addToCart } = useCart();

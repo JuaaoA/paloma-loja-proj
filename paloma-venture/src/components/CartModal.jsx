@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { X, ShoppingBag, Trash2 } from 'lucide-react';
 import { useCart } from '../contexts/CartContext';
+import './Style/CartModal.css'; // Importa o CSS específico do CartModal
 
 const CartModal = () => {
   const { cart, removeFromCart, updateCartItem, isCartOpen, setIsCartOpen, total } = useCart();

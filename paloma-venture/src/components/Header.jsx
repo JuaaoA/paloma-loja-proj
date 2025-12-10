@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ShoppingBag, Menu, X, ChevronRight, Home, Grid, Tag } from 'lucide-react'; // Ícones novos
 import { useCart } from '../contexts/CartContext';
+import './Style/Header.css'; // Importa o CSS específico do Header
 
 const Header = () => {
   const { cart, setIsCartOpen } = useCart();

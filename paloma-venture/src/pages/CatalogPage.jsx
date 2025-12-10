@@ -5,6 +5,8 @@ import { PRODUCTS as MOCK_PRODUCTS } from '../data/data';
 import Loading from '../components/Loading';
 import Breadcrumbs from '../components/Breadcrumbs';
 
+import './Style/CatalogPage.css'; // Importa o CSS específico da página de catálogo
+
 const CatalogPage = () => {
   const navigate = useNavigate();
   
@@ -46,7 +48,7 @@ const CatalogPage = () => {
 
     }, 1000);
     return () => clearTimeout(timer);
-  }, []); // Array vazio = roda só ao montar a página
+  }, [searchParams]); // Array vazio = roda só ao montar a página
 
   // --- EXTRAÇÃO DE DADOS PARA OS FILTROS ---
   const categories = ['Todas', ...new Set(products.map(p => p.category))];
@@ -62,8 +64,8 @@ const CatalogPage = () => {
     setSelectedColors([]);
     setSelectedSizes([]); // <--- LIMPA TAMANHOS
     setSortOption('newest');
-	setFilterSale(false); // Limpa promoção
-	setSearchParams({}); // Limpa a URL também para ficar visualmente limpo
+    setFilterSale(false); // Limpa promoção
+    setSearchParams({}); // Limpa a URL também para ficar visualmente limpo
   };
 
   const normalizeString = (str) => {

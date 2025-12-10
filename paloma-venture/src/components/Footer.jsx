@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Instagram, Mail, MessageCircle, MapPin } from 'lucide-react';
+import './Style/Footer.css'; // Importa o CSS específico do Footer
 
 const Footer = () => {
   return (

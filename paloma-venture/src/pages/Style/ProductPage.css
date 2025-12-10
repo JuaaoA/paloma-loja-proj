@@ -1,0 +1,119 @@
+/* --- PÁGINA DE DETALHES DO PRODUTO --- */
+.product-detail-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  padding-top: 20px;
+}
+
+@media (max-width: 768px) {
+  .product-detail-container {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Galeria de Imagens */
+.image-gallery {
+  display: flex;
+  gap: 20px;
+}
+
+.thumbnails {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.thumbnail {
+  width: 80px;
+  height: 100px;
+  object-fit: cover;
+  cursor: pointer;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  transition: all 0.2s;
+}
+
+.thumbnail:hover, .thumbnail.active {
+  border-color: var(--primary);
+  opacity: 0.8;
+}
+
+/* Zoom Container */
+.main-image-container {
+  flex: 1;
+  position: relative;
+  overflow: hidden; /* Importante para o zoom não sair da caixa */
+  border-radius: 16px;
+  cursor: crosshair;
+  height: 500px;
+  background: #f0f0f0;
+}
+
+.main-image-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.1s ease-out; /* Suaviza o movimento */
+  transform-origin: center center;
+}
+
+/* Detalhes (Lado Direito) */
+.product-info-detail h1 {
+  font-family: 'Times New Roman', serif;
+  font-size: 2.5rem;
+  margin-top: 0;
+  color: var(--primary);
+}
+
+.product-description {
+  color: var(--text-light);
+  line-height: 1.6;
+  margin: 20px 0;
+}
+
+.detail-price {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--primary);
+  margin-bottom: 20px;
+}
+
+.stock-tag {
+  display: inline-block;
+  background: #e2e8f0;
+  color: var(--text-dark);
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  margin-bottom: 10px;
+}
+
+/* --- PRODUTOS RELACIONADOS --- */
+.related-products-section {
+  margin-top: 60px;
+  padding-top: 40px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.related-title {
+  font-family: 'Times New Roman', serif;
+  font-size: 1.5rem;
+  margin-bottom: 20px;
+  color: var(--primary);
+}
+
+.related-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); /* Cards menores */
+  gap: 20px;
+}
+
+/* Ajuste do card para ficar menor nessa seção */
+.related-grid .product-card {
+  font-size: 0.9rem;
+}
+
+.related-grid .product-image-container {
+  height: 250px; /* Imagem um pouco menor */
+}

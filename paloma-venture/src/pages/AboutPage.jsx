@@ -1,6 +1,8 @@
 import React, { useEffect } from 'react';
 import Breadcrumbs from '../components/Breadcrumbs';
 
+import './Style/Institucional.css'; // Importa o CSS específico da AboutPage
+
 const AboutPage = () => {
   useEffect(() => { window.scrollTo(0, 0); }, []);
 
