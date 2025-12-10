@@ -48,7 +48,7 @@ const HomePage = () => {
                     </span>
                 )}
 
-                {/* --- NOVO: Badge de Promoção na Home --- */}
+                {/* --- Badge de Promoção na Home --- */}
                 {product.onSale && product.stock > 0 && (
                     <span style={{position: 'absolute', top: 10, left: 10, background: '#22c55e', color: 'white', padding: '4px 8px', borderRadius: '4px', fontSize: '12px', fontWeight: 'bold'}}>
                         OFERTA
@@ -64,7 +64,7 @@ const HomePage = () => {
                 </div>
                 <h3>{product.name}</h3>
 
-                {/* --- NOVO: Lógica de Preço (Antigo vs Novo) --- */}
+                {/* --- Lógica de Preço (Antigo vs Novo) --- */}
                 {product.onSale && product.oldPrice ? (
                     <div style={{display:'flex', alignItems:'center', gap:'8px'}}>
                         <span style={{textDecoration: 'line-through', color: '#94a3b8', fontSize: '0.9rem'}}>

@@ -23,7 +23,7 @@ const CatalogPage = () => {
   const [selectedSizes, setSelectedSizes] = useState([]); // <--- NOVO ESTADO
   const [sortOption, setSortOption] = useState('newest');
 
-  // NOVO: Filtro de Promoção
+  // Filtro de Promoção
   const [filterSale, setFilterSale] = useState(false);
 
   // --- EFEITO INICIAL (Carregamento + Leitura de URL) ---
@@ -79,7 +79,7 @@ const CatalogPage = () => {
       const matchesColor = selectedColors.length === 0 || (product.colors && product.colors.some(c => selectedColors.includes(c)));
       const matchesSize = selectedSizes.length === 0 || (product.sizes && product.sizes.some(s => selectedSizes.includes(s)));
       
-      // NOVO: Filtro de Promoção
+      // Filtro de Promoção
       // Se filterSale for true, o produto OBRIGATORIAMENTE tem que ter onSale: true
       const matchesSale = filterSale ? product.onSale === true : true;
 
@@ -98,7 +98,7 @@ const CatalogPage = () => {
     );
   };
 
-  // Função auxiliar para Tamanhos (NOVA)
+  // Função auxiliar para Tamanhos
   const toggleSize = (size) => {
     setSelectedSizes(prev => 
       prev.includes(size) ? prev.filter(s => s !== size) : [...prev, size]
@@ -153,7 +153,7 @@ const CatalogPage = () => {
             </div>
           </div>
 
-          {/* Tamanhos (NOVO) - Coloquei antes de Categorias por ser muito usado */}
+          {/* Tamanhos */}
           <div className="filter-group">
             <span className="filter-title">Tamanhos</span>
             <div className="size-filter-options">
@@ -252,7 +252,7 @@ const CatalogPage = () => {
                         <span style={{position: 'absolute', top: 10, right: 10, background: '#ef4444', color: 'white', padding: '4px 8px', borderRadius: '4px', fontSize: '12px', fontWeight: 'bold'}}>Esgotado</span>
                       )}
                       
-                      {/* BADGE DE PROMOÇÃO (NOVO) */}
+                      {/* BADGE DE PROMOÇÃO */}
                       {product.onSale && product.stock > 0 && (
                         <span style={{position: 'absolute', top: 10, left: 10, background: '#22c55e', color: 'white', padding: '4px 8px', borderRadius: '4px', fontSize: '12px', fontWeight: 'bold'}}>
                             OFERTA
@@ -262,7 +262,7 @@ const CatalogPage = () => {
                     <div className="product-info">
                       <h3>{product.name}</h3>
                       
-                      {/* PREÇO COM DESCONTO (NOVO) */}
+                      {/* PREÇO COM DESCONTO */}
                       {product.onSale && product.oldPrice ? (
                           <div style={{display:'flex', alignItems:'center', gap:'8px'}}>
                               <span style={{textDecoration: 'line-through', color: '#94a3b8', fontSize: '0.9rem'}}>R$ {product.oldPrice.toFixed(2)}</span>

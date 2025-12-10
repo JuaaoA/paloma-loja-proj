@@ -18,7 +18,7 @@ const Header = () => {
     <>
       <header>
         {/* --- 1. ESQUERDA --- */}
-        {/* No Desktop: Logo fica aqui (se seu layout for Logo na esquerda) */}
+        {/* No Desktop: Logo fica aqui*/}
         {/* No Mobile: Botão Hambúrguer fica aqui */}
         
         <div style={{display: 'flex', alignItems: 'center', gap: '15px'}}>

@@ -9,7 +9,7 @@ const ContactPage = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Aqui no futuro conectaremos com o Backend
+    // Aqui no futuro conectar com o Backend
     showToast('Mensagem enviada com sucesso! Em breve responderemos.', 'success');
   };
 

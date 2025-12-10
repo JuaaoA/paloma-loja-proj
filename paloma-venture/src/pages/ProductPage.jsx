@@ -15,7 +15,7 @@ const ProductPage = () => {
     const { showToast } = useToast();
     const navigate = useNavigate();
     
-    // Inicializa com NULL (que significa: "Estou carregando pela primeira vez")
+    // Inicializa com NULL
     const [product, setProduct] = useState(null);
     
     const [selectedSize, setSelectedSize] = useState('');

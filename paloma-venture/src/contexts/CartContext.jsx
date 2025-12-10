@@ -19,7 +19,6 @@ export const CartProvider = ({ children }) => {
       ...product,
       selectedSize,
       selectedColor,
-      // Criamos um ID único para o item no carrinho (para poder ter o mesmo produto em tamanhos diferentes)
       cartId: `${product.id}-${selectedSize}-${selectedColor}-${Date.now()}`
     };
     
@@ -31,7 +30,7 @@ export const CartProvider = ({ children }) => {
     setCart(prev => prev.filter(item => item.cartId !== cartId));
   };
 
-  // NOVO: Atualiza atributos do item no carrinho
+  // Atualiza atributos do item no carrinho
   const updateCartItem = (cartId, field, value) => {
     setCart(prev => prev.map(item => 
       item.cartId === cartId ? { ...item, [field]: value } : item
@@ -47,7 +46,6 @@ export const CartProvider = ({ children }) => {
   );
 };
 
-// ... export useCart (mantém igual) ...
 // eslint-disable-next-line react-refresh/only-export-components
 export const useCart = () => {
     const context = useContext(CartContext);
