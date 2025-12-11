@@ -26,9 +26,25 @@ const CatalogPage = () => {
     const fetchProducts = async () => {
       setIsLoading(true);
       try {
-        const { data, error } = await supabase.from('products').select('*');
+        // select('*, categories(title)') para trazer o objeto da categoria junto
+        const { data, error } = await supabase
+          .from('products')
+          .select('*, categories(title)');
+
         if (error) throw error;
-        if (data) setProducts(data);
+
+        if (data) {
+          // NORMALIZAÇÃO DE DADOS
+          // O Supabase retorna: { ...produto, categories: { title: "Vestidos" } }
+          // irá "achatar" isso para facilitar o codigo já existente
+          const formattedData = data.map(prod => ({
+            ...prod,
+            // Se tiver category_id, usa o título da relação. Se não, usa o texto antigo (fallback)
+            category: prod.categories?.title || prod.category 
+          }));
+          
+          setProducts(formattedData);
+        };
       } catch (error) {
         console.error("Erro ao carregar catálogo:", error.message);
       } finally {

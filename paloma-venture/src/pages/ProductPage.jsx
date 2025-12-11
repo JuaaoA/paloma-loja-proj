@@ -36,31 +36,45 @@ const ProductPage = () => {
         
         const fetchProductData = async () => {
             try {
-                // 1. Buscar o produto principal pelo ID
+                // 1. Buscar o produto principal
                 const { data: mainProduct, error: mainError } = await supabase
                     .from('products')
-                    .select('*')
+                    .select('*, categories(id, title)') // Traz o ID e Titulo da categoria
                     .eq('id', id)
-                    .single(); // .single() retorna um objeto, não um array
+                    .single();
 
                 if (mainError) throw mainError;
 
                 if (mainProduct) {
-                    setProduct(mainProduct);
+                    // Normaliza para facilitar renderização
+                    const productFormatted = {
+                        ...mainProduct,
+                        category: mainProduct.categories?.title || mainProduct.category
+                    };
+                    setProduct(productFormatted);
                     
-                    // 2. Buscar produtos relacionados (mesma categoria, exceto ele mesmo)
-                    const { data: related, error: relatedError } = await supabase
-                        .from('products')
-                        .select('*')
-                        .eq('category', mainProduct.category) // Mesma categoria
-                        .neq('id', mainProduct.id)            // ID diferente do atual
-                        .limit(4);                            // Máximo 4
+                    // 2. Buscar relacionados usando o ID da categoria (MUITO MAIS RÁPIDO E SEGURO)
+                    // Se o produto já tem category_id, sera usado ele.
+                    if (mainProduct.category_id) {
+                        const { data: related, error: relatedError } = await supabase
+                            .from('products')
+                            .select('*') // Aqui não precisa join se não for exibir o nome da categoria no card
+                            .eq('category_id', mainProduct.category_id) // Usa ID
+                            .neq('id', mainProduct.id)
+                            .limit(4);
 
-                    if (!relatedError && related) {
-                        setRelatedProducts(related);
+                        if (!relatedError && related) setRelatedProducts(related);
+                    } 
+                    // Fallback: Se for produto antigo sem ID, usa o texto
+                    else {
+                        const { data: related } = await supabase
+                            .from('products')
+                            .select('*')
+                            .eq('category', mainProduct.category) // Usa Texto Antigo
+                            .neq('id', mainProduct.id)
+                            .limit(4);
+                        if (related) setRelatedProducts(related);
                     }
-                } else {
-                    setProduct(false); // Não encontrado
                 }
 
             } catch (error) {

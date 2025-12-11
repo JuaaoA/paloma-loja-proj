@@ -24,7 +24,9 @@ const CategoryGrid = () => {
         const { data, error } = await supabase
           .from('categories')
           .select('*')
-          .order('id'); // Ordena para manter a ordem consistente
+          .eq('featured', true) // <--- MUDANÇA: Filtra apenas os destaques
+          .order('id')
+          .limit(3); // Garante que só mostre 3
 
         if (error) throw error;
         if (data) setCategories(data);

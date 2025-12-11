@@ -18,30 +18,26 @@ const ProductForm = () => {
   const [formData, setFormData] = useState({
     name: '',
     description: '',
-    price: '',    // Agora é string para aceitar vírgula
-    oldPrice: '', // Agora é string para aceitar vírgula
+    price: '',    
+    oldPrice: '', 
     stock: '',
     category: '',
+    category_id: null,
     images: [],
     colors: [],
     sizes: [],
     featured: false
-    // onSale removido: será calculado automaticamente
   });
 
   const [tempSize, setTempSize] = useState('');
   const [tempColor, setTempColor] = useState('#000000');
   const [uploading, setUploading] = useState(false);
 
-  // --- FUNÇÕES AUXILIARES DE PREÇO (MÁSCARA BRASIL) ---
-  const formatMoneyInput = (value) => {
-    // Remove tudo que não é número ou vírgula
-    return value.replace(/[^0-9,]/g, '');
-  };
-
+  // --- FUNÇÕES AUXILIARES DE PREÇO ---
+  const formatMoneyInput = (value) => value.replace(/[^0-9,]/g, '');
+  
   const parseMoney = (value) => {
     if (!value) return null;
-    // Troca vírgula por ponto para o banco de dados (199,90 -> 199.90)
     return parseFloat(value.replace('.', '').replace(',', '.'));
   };
 
@@ -50,8 +46,13 @@ const ProductForm = () => {
     const loadData = async () => {
       setIsLoading(true);
       try {
-        const { data: cats } = await supabase.from('categories').select('title');
-        setCategories(cats || []);
+        const { data: cats } = await supabase.from('categories').select('id, title');
+        
+        // FILTRO: Remove "Ofertas Especiais" da lista de seleção
+        // (Pois é uma categoria automática, não manual)
+        const validCats = cats ? cats.filter(c => c.title !== 'Ofertas Especiais') : [];
+        
+        setCategories(validCats);
 
         if (isEditing) {
           const { data: product, error } = await supabase
@@ -65,7 +66,6 @@ const ProductForm = () => {
           if (product) {
             setFormData({
               ...product,
-              // Converte ponto do banco para vírgula no input (199.90 -> "199,90")
               price: product.price ? product.price.toString().replace('.', ',') : '',
               oldPrice: product.oldPrice ? product.oldPrice.toString().replace('.', ',') : '',
               stock: product.stock || 0
@@ -85,7 +85,6 @@ const ProductForm = () => {
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     
-    // Se for preço, aplica a máscara de vírgula
     if (name === 'price' || name === 'oldPrice') {
         setFormData(prev => ({ ...prev, [name]: formatMoneyInput(value) }));
     } else {
@@ -96,7 +95,7 @@ const ProductForm = () => {
     }
   };
 
-  // --- ARRAYS (Tamanhos e Cores) ---
+  // --- ARRAYS ---
   const addSize = () => {
     if (tempSize && !formData.sizes.includes(tempSize)) {
       setFormData(prev => ({ ...prev, sizes: [...prev.sizes, tempSize] }));
@@ -151,33 +150,57 @@ const ProductForm = () => {
     }));
   };
 
-  // --- SALVAR ---
+  // --- SALVAR (COM VALIDAÇÕES) ---
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
 
     try {
-      // 1. Converter preços de "199,90" para 199.90
+      // 1. Converter preços
       const numericPrice = parseMoney(formData.price);
       const numericOldPrice = parseMoney(formData.oldPrice);
 
-      // 2. Validação Lógica de Promoção
-      // Regra: Preço Antigo DEVE ser maior que Preço Atual
-      if (numericOldPrice && numericOldPrice <= numericPrice) {
-        alert("Erro: Para ser uma promoção, o 'Preço Antigo' deve ser MAIOR que o 'Preço Atual'.\n\nSe não for promoção, deixe o campo 'Preço Antigo' vazio.");
+      // --- VALIDAÇÕES DE INTEGRIDADE ---
+      
+      // Validação 1: Imagem Obrigatória
+      if (formData.images.length === 0) {
+        alert("⚠️ ATENÇÃO: É obrigatório enviar pelo menos uma imagem do produto.");
         setIsLoading(false);
         return;
       }
 
-      // 3. Define onSale automaticamente
+      // Validação 2: Tamanho Obrigatório
+      if (formData.sizes.length === 0) {
+        alert("⚠️ ATENÇÃO: Adicione pelo menos um tamanho (Ex: P, M, 38).");
+        setIsLoading(false);
+        return;
+      }
+
+      // Validação 3: Cor Obrigatória
+      if (formData.colors.length === 0) {
+        alert("⚠️ ATENÇÃO: Adicione pelo menos uma cor.");
+        setIsLoading(false);
+        return;
+      }
+
+      // Validação 4: Lógica de Promoção
+      if (numericOldPrice && numericOldPrice <= numericPrice) {
+        alert("Erro: Para ser uma promoção, o 'Preço Antigo' deve ser MAIOR que o 'Preço Atual'.");
+        setIsLoading(false);
+        return;
+      }
+
+      // --- FIM DAS VALIDAÇÕES ---
+
       const isOnSale = !!(numericOldPrice && numericOldPrice > numericPrice);
 
       const payload = {
         ...formData,
         price: numericPrice,
-        oldPrice: numericOldPrice || null, // Se vazio, manda null
+        oldPrice: numericOldPrice || null,
         onSale: isOnSale,
         stock: parseInt(formData.stock),
+        category_id: parseInt(formData.category_id)
       };
 
       let error;
@@ -267,21 +290,26 @@ const ProductForm = () => {
                     </div>
                     <div className="form-group">
                         <label className="form-label">Categoria</label>
-                        <select name="category" className="form-select" value={formData.category} onChange={handleChange} required>
+                        <select 
+                            name="category_id"
+                            className="form-select" 
+                            value={formData.category_id || ''} 
+                            onChange={(e) => {
+                                const selectedId = e.target.value;
+                                const selectedCat = categories.find(c => c.id.toString() === selectedId);
+                                
+                                setFormData(prev => ({
+                                    ...prev,
+                                    category_id: selectedId,
+                                    category: selectedCat ? selectedCat.title : ''
+                                }));
+                            }} 
+                            required
+                        >
                             <option value="">Selecione...</option>
-                            {/* Prioridade: Categorias do Banco. Fallback: Lista completa da imagem */}
-                            {categories.length > 0 ? (
-                                categories.map((c, i) => <option key={i} value={c.title}>{c.title}</option>)
-                            ) : (
-                                <>
-                                    <option value="Vestidos">Vestidos</option>
-                                    <option value="Conjuntos">Conjuntos</option>
-                                    <option value="Blusas">Blusas</option>
-                                    <option value="Saias">Saias</option>
-                                    <option value="Calças">Calças</option>
-                                    <option value="Macacões">Macacões</option>
-                                </>
-                            )}
+                            {categories.map((c) => (
+                                <option key={c.id} value={c.id}>{c.title}</option>
+                            ))}
                         </select>
                     </div>
                 </div>
@@ -306,6 +334,13 @@ const ProductForm = () => {
                             {uploading ? 'Enviando...' : 'Clique para enviar fotos'}
                         </span>
                     </label>
+                    
+                    {/* Validação Visual: Mostra alerta se não tiver imagem */}
+                    {formData.images.length === 0 && (
+                        <p style={{color: '#ef4444', fontSize: '0.8rem', marginTop: '5px'}}>
+                           * Obrigatório adicionar pelo menos uma imagem.
+                        </p>
+                    )}
 
                     <div className="preview-grid">
                         {formData.images.map((img, index) => (
@@ -330,6 +365,12 @@ const ProductForm = () => {
                         />
                         <button type="button" onClick={addSize} className="add-btn" style={{marginTop:0, width:'auto'}}><Plus size={18}/></button>
                     </div>
+                    
+                    {/* Validação Visual */}
+                    {formData.sizes.length === 0 && (
+                        <p style={{color: '#ef4444', fontSize: '0.8rem', marginTop: '5px'}}>* Adicione pelo menos um tamanho.</p>
+                    )}
+
                     <div className="tags-container">
                         {formData.sizes.map(s => (
                             <span key={s} className="tag-item">
@@ -352,6 +393,12 @@ const ProductForm = () => {
                         />
                         <button type="button" onClick={addColor} className="add-btn" style={{marginTop:0, width:'auto'}}>Adicionar Cor</button>
                     </div>
+                    
+                    {/* Validação Visual */}
+                    {formData.colors.length === 0 && (
+                        <p style={{color: '#ef4444', fontSize: '0.8rem', marginTop: '5px'}}>* Adicione pelo menos uma cor.</p>
+                    )}
+
                     <div className="tags-container">
                         {formData.colors.map(c => (
                             <span key={c} className="tag-item">
