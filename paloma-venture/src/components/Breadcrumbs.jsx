@@ -1,7 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { ChevronRight, Home } from 'lucide-react';
-import { PRODUCTS } from '../data/data';
 
 import './Style/Breadcrumbs.css'; // Importa o CSS específico dos Breadcrumbs
 
@@ -46,13 +45,10 @@ const Breadcrumbs = () => {
   // Cenário 3: Produto
   else if (mainPath === 'produto') {
     crumbs.push({ name: 'Catálogo', path: '/catalogo' });
-
-    const productId = parseInt(pathnames[1]);
-    const product = PRODUCTS.find((p) => p.id === productId);
-
-    if (product) {
-      crumbs.push({ name: product.name, path: null });
-    }
+    
+    // Como não temos o nome fácil aqui sem fazer outra requisição ao banco,
+    // vamos simplificar por enquanto:
+    crumbs.push({ name: 'Detalhes da Peça', path: null });
   }
 
   return (

@@ -19,6 +19,12 @@ import AboutPage from './pages/AboutPage';
 import PolicyPage from './pages/PolicyPage';
 import ContactPage from './pages/ContactPage';
 
+// Admin routes
+import LoginPage from './pages/Admin/LoginPage';
+import AdminDashboard from './pages/Admin/AdminDashboard';
+import ProductForm from './pages/Admin/ProductForm';
+import ProtectedRoute from './components/ProtectedRoute';
+
 function App() {
   return (
     <BrowserRouter>
@@ -30,6 +36,7 @@ function App() {
           
           <main className="main-content" style={{ minHeight: '70vh' }}>
             <Routes>
+              {/* Rotas Públicas */}
               <Route path="/" element={<HomePage />} />
               <Route path="/catalogo" element={<CatalogPage />} />
               <Route path="/produto/:id" element={<ProductPage />} />
@@ -38,6 +45,18 @@ function App() {
               <Route path="/politicas" element={<PolicyPage />} />
               <Route path="/contato" element={<ContactPage />} />
 
+              {/* Rotas Admin */}
+              <Route path="/admin/login" element={<LoginPage />} />
+
+              {/* Rotas Protegidas (futuras) */}
+              <Route element={<ProtectedRoute />}>
+                <Route path="/admin/dashboard" element={<AdminDashboard />} />
+                <Route path="/admin/produtos/novo" element={<ProductForm />} />
+                <Route path="/admin/produtos/editar/:id" element={<ProductForm />} />
+              </Route>
+              
+
+              {/* Rota not found */}
               <Route path="*" element={<NotFoundPage />} />
             </Routes>
           </main>

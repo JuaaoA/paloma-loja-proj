@@ -15,6 +15,15 @@ const CartModal = () => {
     return () => { document.body.style.overflow = 'unset'; };
   }, [isCartOpen]);
 
+  // --- CÁLCULO DO TOTAL SEM DESCONTO ---
+  const originalTotal = cart.reduce((acc, item) => {
+    // Se o item tem oldPrice e está em oferta, usa o oldPrice. Se não, usa o preço normal.
+    const itemOriginalPrice = (item.onSale && item.oldPrice) ? item.oldPrice : item.price;
+    return acc + itemOriginalPrice;
+  }, 0);
+
+  const savings = originalTotal - total; // Quanto o cliente economizou
+
   return (
     <div className={`cart-overlay ${isCartOpen ? 'open' : ''}`} onClick={() => setIsCartOpen(false)}>
       <div className="cart-modal" onClick={e => e.stopPropagation()}>
@@ -42,9 +51,28 @@ const CartModal = () => {
                    />
                   <div className="cart-item-info" style={{flex: 1}}>
                     <strong>{item.name}</strong>
-                    <div style={{color: 'var(--primary)', fontWeight: 'bold', margin: '5px 0'}}>
-                        R$ {item.price.toFixed(2)}
-                    </div>
+                    {item.onSale && item.oldPrice ? (
+                        <div style={{ display: 'flex', flexDirection: 'column', margin: '5px 0' }}>
+                            <span style={{ 
+                                textDecoration: 'line-through', 
+                                color: '#94a3b8', 
+                                fontSize: '0.85rem' 
+                            }}>
+                                R$ {item.oldPrice.toFixed(2)}
+                            </span>
+                            <span style={{ 
+                                color: '#ef4444', 
+                                fontWeight: 'bold',
+                                fontSize: '1rem' 
+                            }}>
+                                R$ {item.price.toFixed(2)}
+                            </span>
+                        </div>
+                    ) : (
+                        <div style={{ color: 'var(--primary)', fontWeight: 'bold', margin: '5px 0' }}>
+                            R$ {item.price.toFixed(2)}
+                        </div>
+                    )}
 
                     {/* SELETORES NO CARRINHO */}
                     <div style={{display: 'flex', gap: '10px', marginTop: '5px'}}>
@@ -80,8 +108,25 @@ const CartModal = () => {
               ))}
             </div>
             
-            <div className="cart-total">
-              <span style={{fontSize: '1rem', color: '#64748b'}}>Total:</span> R$ {total.toFixed(2)}
+            {/* --- ÁREA DO TOTAL --- */}
+            <div className="cart-total" style={{display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '5px'}}>
+              
+              {/* Só mostra a comparação se houver alguma economia (> 0.01 para evitar bugs de arredondamento) */}
+              {savings > 0.01 && (
+                <>
+                  <span style={{fontSize: '0.9rem', color: '#94a3b8', textDecoration: 'line-through', fontWeight: 'normal'}}>
+                    De: R$ {originalTotal.toFixed(2)}
+                  </span>
+                  <span style={{fontSize: '0.9rem', color: '#22c55e', fontWeight: 'bold'}}>
+                    Você economizou: R$ {savings.toFixed(2)}
+                  </span>
+                </>
+              )}
+
+              <div style={{display: 'flex', alignItems: 'center', gap: '10px', marginTop: '5px'}}>
+                  <span style={{fontSize: '1rem', color: '#64748b', fontWeight: 'normal'}}>Total:</span> 
+                  <span style={{fontSize: '1.8rem', color: 'var(--primary)'}}>R$ {total.toFixed(2)}</span>
+              </div>
             </div>
             
             <button className="add-btn" style={{ marginTop: 20, padding: '15px' }}>

@@ -2,12 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { ArrowLeft, AlertCircle } from 'lucide-react';
 import { useCart } from '../contexts/CartContext';
-import { PRODUCTS as MOCK_PRODUCTS } from '../data/data.jsx';
 import ProductGallery from '../components/ProductGallery';
 import Loading from '../components/Loading';
 import { useToast } from '../contexts/ToastContext.jsx';
 import Breadcrumbs from '../components/Breadcrumbs.jsx';
 import NotFoundPage from './NotFoundPage.jsx';
+
+import { supabase } from '../services/supabase.js';
 
 import './Style/ProductPage.css'; // Importa o CSS específico da ProductPage
 
@@ -26,27 +27,56 @@ const ProductPage = () => {
 
     // isLoading só é verdade se:
     // 1. product for null (estado inicial)
-    // 2. OU se temos um produto, mas o ID dele é diferente da URL (usuário trocou de página)
-    const isLoading = product === null || (product && product.id !== parseInt(id));
+    const isLoading = product === null;
 
-    const relatedProducts = product 
-        ? MOCK_PRODUCTS.filter(p => p.category === product.category && p.id !== product.id).slice(0, 4)
-        : [];
+    const [relatedProducts, setRelatedProducts] = useState([]);
 
     useEffect(() => {
         window.scrollTo(0, 0);
-        const timer = setTimeout(() => {
-            const found = MOCK_PRODUCTS.find(p => p.id === parseInt(id));
-            
-            // Se achou, salva o objeto. Se não achou (undefined), salva FALSE.
-            // Isso diferencia o "Null" (carregando) do "False" (não achei)
-            setProduct(found || false);
-            
-            setSelectedSize('');
-            setSelectedColor('');
-            setError('');
-        }, 800);
-        return () => clearTimeout(timer);
+        
+        const fetchProductData = async () => {
+            try {
+                // 1. Buscar o produto principal pelo ID
+                const { data: mainProduct, error: mainError } = await supabase
+                    .from('products')
+                    .select('*')
+                    .eq('id', id)
+                    .single(); // .single() retorna um objeto, não um array
+
+                if (mainError) throw mainError;
+
+                if (mainProduct) {
+                    setProduct(mainProduct);
+                    
+                    // 2. Buscar produtos relacionados (mesma categoria, exceto ele mesmo)
+                    const { data: related, error: relatedError } = await supabase
+                        .from('products')
+                        .select('*')
+                        .eq('category', mainProduct.category) // Mesma categoria
+                        .neq('id', mainProduct.id)            // ID diferente do atual
+                        .limit(4);                            // Máximo 4
+
+                    if (!relatedError && related) {
+                        setRelatedProducts(related);
+                    }
+                } else {
+                    setProduct(false); // Não encontrado
+                }
+
+            } catch (error) {
+                console.error("Erro ao buscar produto:", error);
+                setProduct(false);
+            }
+        };
+
+        // Resetar estados antes de buscar
+        setProduct(null);
+        setSelectedSize('');
+        setSelectedColor('');
+        setError('');
+        
+        fetchProductData();
+
     }, [id]);
 
     const handleBack = () => {
@@ -91,8 +121,46 @@ const ProductPage = () => {
 
                 <div className="product-info-detail">
                     <span className="stock-tag">{product.stock > 0 ? "Em Estoque" : "Esgotado"}</span>
+
                     <h1>{product.name}</h1>
-                    <p className="detail-price">R$ {product.price.toFixed(2)}</p>
+
+                    {product.onSale && product.oldPrice ? (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '15px', marginBottom: '20px' }}>
+                            {/* Preço Antigo (Riscado e Cinza) */}
+                            <span style={{ 
+                                textDecoration: 'line-through', 
+                                color: '#94a3b8', 
+                                fontSize: '1.4rem',
+                                fontWeight: 'normal' 
+                            }}>
+                                R$ {product.oldPrice.toFixed(2)}
+                            </span>
+                            
+                            {/* Preço Novo (Vermelho e Grande) */}
+                            <span style={{ 
+                                fontSize: '2rem', 
+                                fontWeight: '800', 
+                                color: '#ef4444' // Vermelho de oferta
+                            }}>
+                                R$ {product.price.toFixed(2)}
+                            </span>
+
+                            {/* Badge de Porcentagem */}
+                            <span style={{
+                                backgroundColor: '#ef4444', 
+                                color: 'white', 
+                                padding: '4px 8px', 
+                                borderRadius: '6px', 
+                                fontSize: '0.9rem', 
+                                fontWeight: 'bold'
+                            }}>
+                                -{Math.round(((product.oldPrice - product.price) / product.oldPrice) * 100)}% OFF
+                            </span>
+                        </div>
+                    ) : (
+                        /* Preço Normal (Azul da marca) */
+                        <p className="detail-price">R$ {product.price.toFixed(2)}</p>
+                    )}
                     <p className="product-description">{product.description}</p>
                     
                     <div style={{marginBottom: '20px'}}>
@@ -173,15 +241,57 @@ const ProductPage = () => {
                                         )}
                                     </div>
                                     <div className="product-info" style={{padding: '10px'}}>
+
+                                        {/* --- BOLINHAS DE CORES --- */}
+                                        <div style={{display: 'flex', justifyContent: 'center', gap: '5px', marginBottom: '8px'}}>
+                                            {rel.colors && rel.colors.map((color, index) => (
+                                                <span 
+                                                    key={index} 
+                                                    style={{
+                                                        backgroundColor: color,
+                                                        width: '12px',       // Tamanho da bolinha
+                                                        height: '12px',
+                                                        borderRadius: '50%', // Redonda
+                                                        border: '1px solid #ddd',
+                                                        display: 'inline-block'
+                                                    }}
+                                                    title={color} // Mostra o código da cor ao passar o mouse
+                                                ></span>
+                                            ))}
+                                        </div>
+
                                         <h4 style={{margin: '0 0 5px 0', fontSize: '1rem'}}>{rel.name}</h4>
                                         
                                         {rel.onSale && rel.oldPrice ? (
-                                            <div style={{display:'flex', gap:'5px', fontSize:'0.9rem'}}>
-                                                <span style={{textDecoration:'line-through', color:'#999'}}>R$ {rel.oldPrice.toFixed(0)}</span>
-                                                <span style={{color:'#ef4444', fontWeight:'bold'}}>R$ {rel.price.toFixed(0)}</span>
+                                            <div style={{display:'flex', alignItems:'center', gap:'8px', flexWrap: 'wrap'}}>
+                                                {/* Preço Antigo */}
+                                                <span style={{
+                                                    textDecoration:'line-through', 
+                                                    color:'#94a3b8', 
+                                                    fontSize:'0.85rem'
+                                                }}>
+                                                    R$ {rel.oldPrice.toFixed(2)}
+                                                </span>
+                                                
+                                                {/* Preço Novo */}
+                                                <span style={{
+                                                    color:'#ef4444', 
+                                                    fontWeight:'800', 
+                                                    fontSize:'1.1rem'
+                                                }}>
+                                                    R$ {rel.price.toFixed(2)}
+                                                </span>
                                             </div>
                                         ) : (
-                                            <p style={{margin:0, fontWeight:'bold', color:'var(--primary)'}}>R$ {rel.price.toFixed(2)}</p>
+                                            /* Preço Normal */
+                                            <p style={{
+                                                margin:0, 
+                                                fontWeight:'800', 
+                                                color:'var(--primary)',
+                                                fontSize:'1.1rem'
+                                            }}>
+                                                R$ {rel.price.toFixed(2)}
+                                            </p>
                                         )}
                                     </div>
                                 </Link>

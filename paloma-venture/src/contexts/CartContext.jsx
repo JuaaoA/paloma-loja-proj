@@ -1,4 +1,5 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
+import { supabase } from '../services/supabase';
 
 const CartContext = createContext();
 
@@ -11,6 +12,66 @@ export const CartProvider = ({ children }) => {
 
   useEffect(() => {
     localStorage.setItem('cart', JSON.stringify(cart));
+  }, [cart]);
+
+  // --- 2. NOVO: VALIDAÇÃO DE ITENS DELETADOS ---
+  useEffect(() => {
+    const validateCartItems = async () => {
+      // Se o carrinho estiver vazio, não precisa checar nada
+      if (cart.length === 0) return;
+
+      // Pega todos os IDs únicos dos produtos que estão no carrinho
+      const productIds = [...new Set(cart.map(item => item.id))];
+
+      try {
+        // Pergunta ao Supabase quais desses IDs ainda existem no banco
+        const { data: validProducts, error } = await supabase
+          .from('products')
+          .select('id, price, oldPrice, onSale, stock, name, images') // Trazemos dados frescos
+          .in('id', productIds);
+
+        if (error) throw error;
+
+        // Se o banco não retornou nada, ou retornou menos itens...
+        if (validProducts) {
+          
+          // Filtra o carrinho: Só mantém o item se o ID dele existir na resposta do banco
+          const verifiedCart = cart.filter(cartItem => {
+            const productStillExists = validProducts.find(p => p.id === cartItem.id);
+            // Também podemos checar se ainda tem estoque!
+            const hasStock = productStillExists ? productStillExists.stock > 0 : false;
+            
+            return productStillExists && hasStock;
+          });
+
+          // Opcional: Atualizar preços se mudaram no banco (Sincronização)
+          const updatedCart = verifiedCart.map(cartItem => {
+             const freshData = validProducts.find(p => p.id === cartItem.id);
+             return {
+                 ...cartItem,
+                 price: freshData.price,
+                 oldPrice: freshData.oldPrice,
+                 onSale: freshData.onSale,
+                 name: freshData.name, // Caso tenha mudado o nome
+                 images: freshData.images
+             };
+          });
+
+          // Se a quantidade de itens mudou (algum foi deletado) ou preço mudou
+          if (JSON.stringify(updatedCart) !== JSON.stringify(cart)) {
+            console.log("Carrinho atualizado: Itens removidos ou atualizados pelo servidor.");
+            setCart(updatedCart);
+          }
+        }
+      } catch (err) {
+        console.error("Erro ao validar carrinho:", err);
+      }
+    };
+
+    validateCartItems();
+    
+    // Essa validação roda uma vez ao montar o site. 
+    // Se quiser que rode toda vez que abre o modal, precisaria mover a lógica.
   }, [cart]);
 
   // ADICIONAR: Recebe agora também o tamanho e cor escolhidos

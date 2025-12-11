@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Eye } from 'lucide-react'; 
-import { PRODUCTS as MOCK_PRODUCTS } from '../data/data';
 import HeroSlider from '../components/HeroSlider';
 import CategoryGrid from '../components/CategoryGrid'; // O seu Grid novo
 import Loading from '../components/Loading';
+
+import { supabase } from '../services/supabase';
 
 import './Style/HomePage.css'; // Importa o CSS específico da HomePage
 
@@ -15,13 +16,28 @@ const HomePage = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    window.scrollTo(0,0);
-    const timer = setTimeout(() => {
-      setProducts(MOCK_PRODUCTS);
-      setIsLoading(false);
-    }, 1500); 
+    // Função assíncrona para buscar dados
+    const fetchProducts = async () => {
+      try {
+        setIsLoading(true);
+        
+        const { data, error } = await supabase
+          .from('products')
+          .select('*');
 
-    return () => clearTimeout(timer);
+        if (error) throw error;
+
+        // Se deu certo, salva no estado
+        if (data) setProducts(data);
+        
+      } catch (error) {
+        console.error("Erro ao buscar produtos:", error.message);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchProducts(); // Chama a função
   }, []);
 
   if (isLoading) {
