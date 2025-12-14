@@ -7,6 +7,7 @@ import Loading from '../components/Loading';
 import { useToast } from '../contexts/ToastContext.jsx';
 import Breadcrumbs from '../components/Breadcrumbs.jsx';
 import NotFoundPage from './NotFoundPage.jsx';
+import SEO from '../components/SEO.jsx';
 
 import { supabase } from '../services/supabase.js';
 
@@ -124,6 +125,13 @@ const ProductPage = () => {
 
     return (
         <div className="container page-enter">
+            <SEO 
+                title={product.name}
+                description={product.description ? product.description.substring(0, 150) + "..." : ""}
+                image={product.images ? product.images[0] : null}
+            />
+            {/* --------------------------------------- */}
+
             <Breadcrumbs />
 
             <button onClick={handleBack} className="back-btn">

@@ -4,6 +4,7 @@ import { Eye } from 'lucide-react';
 import HeroSlider from '../components/HeroSlider';
 import CategoryGrid from '../components/CategoryGrid'; // O seu Grid novo
 import Loading from '../components/Loading';
+import SEO from '../components/SEO';
 
 import { supabase } from '../services/supabase';
 
@@ -45,7 +46,13 @@ const HomePage = () => {
   }
 
   return (
-    <div className="page-enter"> 
+    <div className="page-enter">
+      <SEO 
+        title="Início" 
+        description="Confira as novidades em moda feminina, vestidos, conjuntos e muito mais." 
+      />
+      {/* --------------------------------------- */}
+      
       <HeroSlider />
       
       <CategoryGrid />

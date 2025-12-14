@@ -24,6 +24,8 @@ import LoginPage from './pages/Admin/LoginPage';
 import AdminDashboard from './pages/Admin/AdminDashboard';
 import ProductForm from './pages/Admin/ProductForm';
 import ProtectedRoute from './components/ProtectedRoute';
+import CategoryForm from './pages/Admin/CategoryForm';
+
 
 function App() {
   return (
@@ -53,6 +55,9 @@ function App() {
                 <Route path="/admin/dashboard" element={<AdminDashboard />} />
                 <Route path="/admin/produtos/novo" element={<ProductForm />} />
                 <Route path="/admin/produtos/editar/:id" element={<ProductForm />} />
+
+                <Route path="/admin/categorias/nova" element={<CategoryForm />} />
+                <Route path="/admin/categorias/editar/:id" element={<CategoryForm />} />
               </Route>
               
 

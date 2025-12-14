@@ -4,6 +4,8 @@ import { ArrowLeft, Save, Upload, X, Plus, AlertCircle } from 'lucide-react';
 import { supabase } from '../../services/supabase';
 import Loading from '../../components/Loading';
 
+import { compressImage } from '../../utils/ImageOptimizer';
+
 import './Style/AdminDashboard.css';
 
 const ProductForm = () => {
@@ -121,11 +123,19 @@ const ProductForm = () => {
 
     try {
       for (const file of files) {
-        const fileName = `${Date.now()}-${file.name.replace(/\s/g, '-')}`;
+        // 1. OTIMIZAÇÃO: Comprime antes de subir
+        const compressedBlob = await compressImage(file);
         
+        // 2. NOME: Garante extensão .webp
+        const fileExt = 'webp'; 
+        const fileName = `${Date.now()}-${file.name.replace(/\.[^/.]+$/, "").replace(/\s/g, '-')}.${fileExt}`;
+        
+        // 3. UPLOAD: Envia o Blob comprimido, não o arquivo original
         const { error: uploadError } = await supabase.storage
           .from('product-images')
-          .upload(fileName, file);
+          .upload(fileName, compressedBlob, {
+            contentType: 'image/webp' // Avisa o Supabase que é WebP
+          });
 
         if (uploadError) throw uploadError;
 
@@ -137,6 +147,7 @@ const ProductForm = () => {
       }
       setFormData(prev => ({ ...prev, images: [...prev.images, ...newImageUrls] }));
     } catch (error) {
+      console.error(error);
       alert('Erro no upload: ' + error.message);
     } finally {
       setUploading(false);
