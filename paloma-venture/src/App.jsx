@@ -18,6 +18,10 @@ import NotFoundPage from './pages/NotFoundPage';
 import AboutPage from './pages/AboutPage';
 import PolicyPage from './pages/PolicyPage';
 import ContactPage from './pages/ContactPage';
+import CheckoutPage from './pages/CheckoutPage';
+import ClientLoginPage from './pages/ClientLoginPage';
+import OrderSuccessPage from './pages/OrderSuccessPage';
+import ClientOrdersPage from './pages/ClientOrdersPage';
 
 // Admin routes
 import LoginPage from './pages/Admin/LoginPage';
@@ -25,6 +29,7 @@ import AdminDashboard from './pages/Admin/AdminDashboard';
 import ProductForm from './pages/Admin/ProductForm';
 import ProtectedRoute from './components/ProtectedRoute';
 import CategoryForm from './pages/Admin/CategoryForm';
+import AdminOrderDetailsPage from './pages/Admin/AdminOrderDetailsPage';
 
 
 function App() {
@@ -47,6 +52,14 @@ function App() {
               <Route path="/politicas" element={<PolicyPage />} />
               <Route path="/contato" element={<ContactPage />} />
 
+              <Route path="/login" element={<ClientLoginPage />} />
+
+              <Route path="/pedido-confirmado/:id" element={<OrderSuccessPage />} />
+
+              {/* Rotas usuário com conta*/}
+              <Route path="/checkout" element={<CheckoutPage />} />
+              <Route path="/meus-pedidos" element={<ClientOrdersPage />} />
+
               {/* Rotas Admin */}
               <Route path="/admin/login" element={<LoginPage />} />
 
@@ -58,6 +71,8 @@ function App() {
 
                 <Route path="/admin/categorias/nova" element={<CategoryForm />} />
                 <Route path="/admin/categorias/editar/:id" element={<CategoryForm />} />
+
+                <Route path="/admin/pedidos/:id" element={<AdminOrderDetailsPage />} />
               </Route>
               
 

@@ -1,0 +1,154 @@
+/* src/pages/Style/ClientOrders.css */
+
+.client-orders-container {
+  max-width: 800px;
+  margin: 40px auto;
+  padding: 20px;
+}
+
+.page-title {
+  font-size: 1.8rem;
+  color: #1e293b;
+  margin-bottom: 25px;
+  border-bottom: 1px solid #e2e8f0;
+  padding-bottom: 15px;
+}
+
+/* Estado Vazio */
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  background: #f8fafc;
+  border-radius: 12px;
+  border: 1px dashed #cbd5e1;
+}
+
+.empty-text {
+  color: #64748b;
+  margin-top: 15px;
+  font-size: 1.1rem;
+}
+
+.start-shopping-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 20px;
+  background: var(--primary);
+  color: white;
+  padding: 12px 24px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: background 0.2s;
+}
+.start-shopping-btn:hover { background: #334155; }
+
+
+/* Lista de Pedidos */
+.orders-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.client-order-card {
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 20px;
+  background: white;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.client-order-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  border-color: #cbd5e1;
+}
+
+/* Indicador lateral colorido baseado no status (opcional, mas fica chique) */
+.client-order-card::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background-color: #e2e8f0; /* Cor padrão */
+}
+
+.client-order-card.pending::before { background-color: #d97706; }
+.client-order-card.paid::before { background-color: #16a34a; }
+.client-order-card.shipped::before { background-color: #2563eb; }
+.client-order-card.delivered::before { background-color: #475569; }
+.client-order-card.cancelled::before { background-color: #ef4444; }
+
+
+.order-info-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.order-number {
+  font-size: 0.85rem;
+  color: #94a3b8;
+  font-family: monospace;
+}
+
+.order-date {
+  font-size: 0.9rem;
+  color: #64748b;
+}
+
+.order-total {
+  font-size: 1.2rem;
+  color: var(--primary);
+  font-weight: 700;
+}
+
+/* Badge de Status */
+.client-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+.chevron-icon {
+  color: #cbd5e1;
+  transition: transform 0.2s;
+}
+
+.client-order-card:hover .chevron-icon {
+  transform: translateX(3px);
+  color: var(--primary);
+}
+
+/* Responsividade Mobile */
+@media (max-width: 600px) {
+  .client-order-card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+  
+  .client-order-card > div:last-child {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px dashed #f1f5f9;
+    padding-top: 10px;
+  }
+}

@@ -1,34 +1,54 @@
 import { useEffect, useState } from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
 import { supabase } from '../services/supabase';
+import Loading from './Loading'; // Reutilizando seu loading
 
 const ProtectedRoute = () => {
-  const [session, setSession] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [isAuthorized, setIsAuthorized] = useState(null); // null = carregando, false = bloqueado, true = autorizado
 
   useEffect(() => {
-    // Verifica sessão atual
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setLoading(false);
-    });
+    const checkUserRole = async () => {
+      // 1. Pega o usuário logado
+      const { data: { session } } = await supabase.auth.getSession();
 
-    // Escuta mudanças (login/logout)
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-    });
+      if (!session) {
+        setIsAuthorized(false);
+        return;
+      }
 
-    return () => subscription.unsubscribe();
+      // 2. Vai no banco consultar qual é o cargo (role) desse usuário
+      const { data: profile, error } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', session.user.id)
+        .single();
+
+      if (error || !profile) {
+        console.error("Erro ao verificar permissão:", error);
+        setIsAuthorized(false);
+        return;
+      }
+
+      // 3. Verifica se é admin
+      if (profile.role === 'admin') {
+        setIsAuthorized(true);
+      } else {
+        // É usuário logado, mas é CLIENTE (intruso tentando entrar no admin)
+        setIsAuthorized(false);
+      }
+    };
+
+    checkUserRole();
   }, []);
 
-  if (loading) return <div>Carregando...</div>;
+  if (isAuthorized === null) return <Loading />;
 
-  // Se não tem sessão (não logado), redireciona pro Login
-  if (!session) {
+  // Se não for autorizado, chuta para o login de admin
+  if (!isAuthorized) {
     return <Navigate to="/admin/login" replace />;
   }
 
-  // Se tem sessão, deixa passar (Outlet renderiza os filhos)
+  // Se passou, libera o acesso
   return <Outlet />;
 };
 

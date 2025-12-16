@@ -308,14 +308,20 @@
   border-radius: 12px;
   padding: 15px;
   background: white;
-  transition: all 0.2s;
   position: relative;
-  overflow: hidden;
 }
 
-.cat-admin-card.featured {
-  border-color: #fbbf24;
-  box-shadow: 0 0 0 2px rgba(251, 191, 36, 0.2);
+.cat-admin-card.featured { 
+  border-color: #fbbf24; 
+  box-shadow: 0 0 0 2px rgba(251, 191, 36, 0.2); 
+}
+
+.cat-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center; /* Garante que o texto e a estrela fiquem na mesma linha */
+  margin-bottom: 10px;
+  height: 40px; /* Define uma altura fixa para o cabeçalho não pular */
 }
 
 .cat-header {
@@ -323,26 +329,67 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 10px;
+  min-height: 32px; /* Garante altura mínima para alinhar bem */
 }
 
-.cat-bg-preview {
-  height: 100px;
-  border-radius: 8px;
-  background-size: cover;
-  background-position: center;
-  margin-bottom: 10px;
-  opacity: 0.7;
+/* O Botão da Estrela Específico do Card de Categoria */
+.cat-header .toggle-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px; /* Largura fixa */
+  height: 32px; /* Altura fixa igual à largura */
+  padding: 0; /* Remove padding para não distorcer */
+  margin: 0;
+  border-radius: 50%; /* Forma de círculo */
+  transition: all 0.2s;
+}
+
+.cat-header .toggle-btn:hover {
+    transform: scale(1.1);
+}
+
+.cat-bg-preview { 
+  height: 100px; 
+  border-radius: 8px; 
+  background-size: cover; 
+  margin-bottom: 10px; 
 }
 
 .cat-admin-card.featured .cat-bg-preview { opacity: 1; }
 
-.cat-footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 10px;
-  padding-top: 10px;
+.cat-footer { 
+  display: flex; 
+  justify-content: space-between; 
+  margin-top: 10px; 
+  padding-top: 10px; 
   border-top: 1px solid #f1f5f9;
-  font-size: 0.85rem;
-  color: #64748b;
+  color: #64748b; font-size: 0.85rem; 
+}
+
+/* CLASSE EXCLUSIVA PARA O BOTÃO ESTRELA DA CATEGORIA */
+.cat-star-btn {
+  width: 34px;
+  height: 34px;
+  min-width: 34px;  /* Trava a largura mínima */
+  min-height: 34px; /* Trava a altura mínima */
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 !important; /* Força zero padding */
+  margin: 0;
+  transition: transform 0.2s;
+  background-color: transparent; /* O JSX vai controlar a cor */
+}
+
+.cat-star-btn:hover {
+  transform: scale(1.1);
+}
+
+/* Garante que o ícone SVG dentro dele não bugue o tamanho */
+.cat-star-btn svg {
+  display: block;
 }

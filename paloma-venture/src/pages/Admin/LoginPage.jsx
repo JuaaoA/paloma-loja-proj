@@ -16,7 +16,8 @@ const LoginPage = () => {
       email,
       password,
     });
-
+    console.log(data);
+    
     setLoading(false);
 
     if (error) {

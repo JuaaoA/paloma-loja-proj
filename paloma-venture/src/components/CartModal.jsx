@@ -2,9 +2,11 @@ import React, { useEffect } from 'react';
 import { X, ShoppingBag, Trash2 } from 'lucide-react';
 import { useCart } from '../contexts/CartContext';
 import './Style/CartModal.css'; // Importa o CSS específico do CartModal
+import { useNavigate } from 'react-router-dom';
 
 const CartModal = () => {
   const { cart, removeFromCart, updateCartItem, isCartOpen, setIsCartOpen, total } = useCart();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (isCartOpen) {
@@ -129,8 +131,15 @@ const CartModal = () => {
               </div>
             </div>
             
-            <button className="add-btn" style={{ marginTop: 20, padding: '15px' }}>
-              Finalizar Compra via WhatsApp
+            <button 
+                className="add-btn" 
+                style={{ marginTop: 20, padding: '15px', backgroundColor: '#22c55e' }}
+                onClick={() => {
+                    setIsCartOpen(false); // Fecha o modal
+                    navigate('/checkout'); // Vai para a página de pagamento
+                }}
+            >
+              Ir para o Pagamento
             </button>
           </>
         )}

@@ -6,6 +6,8 @@ import Breadcrumbs from '../components/Breadcrumbs';
 import { supabase } from '../services/supabase';
 import './Style/CatalogPage.css';
 
+import SEO from '../components/SEO';
+
 const CatalogPage = () => {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -99,6 +101,12 @@ const CatalogPage = () => {
 
   return (
     <div className="container page-enter">
+      <SEO 
+        title="Catálogo" 
+        description="Confira as novidades em moda feminina, vestidos, conjuntos e muito mais." 
+      />
+      {/* --------------------------------------- */}
+
       <Breadcrumbs />
       <div className="catalog-header">
         <h1 style={{fontSize: '1.5rem', fontFamily: 'Times New Roman, serif'}}>Catálogo Completo</h1>

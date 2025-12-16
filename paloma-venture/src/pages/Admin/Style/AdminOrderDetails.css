@@ -1,0 +1,142 @@
+/* src/pages/Style/AdminOrderDetails.css */
+
+.details-page-container {
+  max-width: 1000px;
+  margin: 40px auto;
+  padding: 20px;
+}
+
+/* --- HEADER --- */
+.details-header {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 30px;
+  flex-wrap: wrap; /* Permite quebrar linha no mobile */
+}
+
+.back-link {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  text-decoration: none;
+  color: #64748b;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+.back-link:hover { color: var(--primary); }
+
+.order-title {
+  margin: 0;
+  font-size: 1.8rem;
+  color: #1e293b;
+}
+
+.status-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-weight: bold;
+  font-size: 0.9rem;
+}
+
+/* --- GRID DE LAYOUT (RESPONSIVO) --- */
+.details-layout {
+  display: grid;
+  grid-template-columns: 2fr 1fr; /* Desktop: 2 colunas */
+  gap: 30px;
+}
+
+/* AQUI A MÁGICA DO MOBILE ACONTECE */
+@media (max-width: 768px) {
+  .details-layout {
+    grid-template-columns: 1fr; /* Mobile: 1 coluna empilhada */
+  }
+  
+  .order-title {
+    font-size: 1.5rem; /* Título menor no mobile */
+  }
+}
+
+.details-column {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* --- CARDS (CAIXAS BRANCAS) --- */
+.info-card {
+  background: white;
+  padding: 25px;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.card-title {
+  margin-top: 0;
+  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1.1rem;
+  color: #334155;
+}
+
+/* Select de Status */
+.status-select-wrapper {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.status-dropdown {
+  flex: 1;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+  font-size: 1rem;
+  background: white;
+  color: #334155;
+}
+
+/* Lista de Itens */
+.item-row {
+  display: flex;
+  justify-content: space-between;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #f1f5f9;
+  margin-bottom: 15px;
+}
+.item-row:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+
+.item-text-right {
+  text-align: right;
+}
+
+/* Ajuste fino para mobile muito pequeno (preço desce) */
+@media (max-width: 480px) {
+  .item-row {
+    flex-direction: column;
+    gap: 8px;
+  }
+  .item-text-right {
+    text-align: left;
+  }
+}
+
+.details-total-row {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px dashed #cbd5e1;
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+/* Tipografia auxiliar */
+.text-muted { color: #64748b; font-size: 0.9rem; margin: 4px 0; }
+.text-bold { color: #334155; font-weight: bold; }

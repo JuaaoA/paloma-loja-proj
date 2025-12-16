@@ -1,0 +1,78 @@
+/* src/pages/Style/AdminOrders.css */
+
+/* --- GRID DE PEDIDOS (LISTA) --- */
+.orders-grid {
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-top: 20px;
+}
+
+.order-list-header {
+  display: grid;
+  /* Colunas: ID, Data, Cidade, Status, Total, Ação */
+  grid-template-columns: 80px 120px 1fr 140px 120px 140px; 
+  padding: 15px;
+  background: #f8fafc;
+  border-bottom: 1px solid #e2e8f0;
+  font-weight: 600;
+  color: #64748b;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.order-card-row {
+  display: grid;
+  grid-template-columns: 80px 120px 1fr 140px 120px 140px;
+  padding: 15px;
+  border-bottom: 1px solid #e2e8f0;
+  align-items: center;
+  transition: background 0.1s;
+  font-size: 0.95rem;
+  color: #334155;
+  background: white;
+}
+
+.order-card-row:last-child { border-bottom: none; }
+.order-card-row:hover { background: #f1f5f9; }
+
+.order-col {
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-right: 10px;
+}
+
+.font-mono { font-family: monospace; color: #64748b; }
+.font-bold { font-weight: 700; color: #1e293b; }
+
+/* Responsividade */
+@media (max-width: 1024px) {
+  .orders-grid { overflow-x: auto; }
+  .order-list-header, .order-card-row { min-width: 800px; }
+}
+
+@media (max-width: 768px) {
+    .orders-grid { border: none; overflow: visible; }
+    .order-list-header { display: none; }
+    
+    .order-card-row { 
+        display: flex; 
+        flex-direction: column; 
+        align-items: flex-start; 
+        gap: 10px; 
+        background: white; 
+        border: 1px solid #e2e8f0; 
+        border-radius: 12px; 
+        margin-bottom: 15px; 
+        padding: 20px; 
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); 
+        min-width: auto; 
+    }
+    
+    .order-col { 
+        width: 100%; 
+        display: flex; 
+        justify-content: space-between; 
+        border-bottom: 1px dashed #f1f5f9; 
+        padding-bottom: 8px; 
+    }
+}
