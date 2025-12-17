@@ -22,6 +22,7 @@ import CheckoutPage from './pages/CheckoutPage';
 import ClientLoginPage from './pages/ClientLoginPage';
 import OrderSuccessPage from './pages/OrderSuccessPage';
 import ClientOrdersPage from './pages/ClientOrdersPage';
+import ClientOrderDetailsPage from './pages/ClientOrderDetailsPage';
 
 // Admin routes
 import LoginPage from './pages/Admin/LoginPage';
@@ -59,6 +60,7 @@ function App() {
               {/* Rotas usuário com conta*/}
               <Route path="/checkout" element={<CheckoutPage />} />
               <Route path="/meus-pedidos" element={<ClientOrdersPage />} />
+              <Route path="/meus-pedidos/:id" element={<ClientOrderDetailsPage />} />
 
               {/* Rotas Admin */}
               <Route path="/admin/login" element={<LoginPage />} />

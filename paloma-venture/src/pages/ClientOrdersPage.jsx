@@ -85,7 +85,7 @@ const ClientOrdersPage = () => {
               <div 
                 key={order.id} 
                 className={`client-order-card ${order.status}`}
-                onClick={() => navigate(`/pedido-confirmado/${order.id}`)}
+                onClick={() => navigate(`/meus-pedidos/${order.id}`)}
               >
                 {/* Esquerda: Infos */}
                 <div className="order-info-group">

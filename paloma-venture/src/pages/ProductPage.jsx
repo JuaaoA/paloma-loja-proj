@@ -112,7 +112,13 @@ const ProductPage = () => {
             return;
         }
         
-        addToCart(product, selectedSize, selectedColor);
+        const success = addToCart(product, selectedSize, selectedColor);
+
+        if (!success) {
+            setError('Quantidade solicitada excede o estoque disponível.');
+            return;
+        }
+        
         showToast('Produto adicionado à sacola!', 'success');
         setError('');
     };

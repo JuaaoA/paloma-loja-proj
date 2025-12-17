@@ -1,80 +1,121 @@
-/* --- PÁGINAS INSTITUCIONAIS --- */
-.institutional-content {
-  max-width: 800px; /* Texto não muito largo para facilitar leitura */
-  margin: 0 auto;
-  line-height: 1.8;
-  color: var(--text-dark);
+/* src/pages/Style/Institucional.css */
+
+.contact-hero {
+  text-align: center;
+  max-width: 600px;
+  margin: 0 auto 40px auto;
 }
 
-.institutional-content h2 {
-  font-family: 'Times New Roman', serif;
-  color: var(--primary);
-  margin-top: 40px;
-  margin-bottom: 20px;
-  border-bottom: 1px solid #eee;
-  padding-bottom: 10px;
+.section-subtitle {
+  color: #64748b;
+  font-size: 1.1rem;
+  line-height: 1.6;
 }
 
-.institutional-content p {
-  margin-bottom: 20px;
-  font-size: 1rem;
-  color: #475569;
-}
-
-.institutional-content ul {
-  margin-bottom: 20px;
-  padding-left: 20px;
-}
-
-.institutional-content li {
-  margin-bottom: 10px;
-  color: #475569;
-}
-
-/* Formulário de Contato */
-.contact-grid {
+/* GRID DE CARTÕES */
+.contact-hub-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 40px;
-  margin-top: 30px;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+  max-width: 1000px;
+  margin: 0 auto 40px auto;
 }
 
-@media (max-width: 768px) {
-  .contact-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-.form-group {
-  margin-bottom: 20px;
-}
-
-.form-label {
-  display: block;
-  margin-bottom: 8px;
-  font-weight: 600;
-  color: var(--primary);
-}
-
-.form-input, .form-textarea {
-  width: 100%;
-  padding: 12px;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
-  font-family: inherit;
-  transition: border 0.3s;
-  box-sizing: border-box; 
-}
-
-.form-input:focus, .form-textarea:focus {
-  outline: none;
-  border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(0, 31, 91, 0.1);
-}
-
-.contact-info-box {
-  background: #f8fafc;
+.hub-card {
+  display: flex;
+  align-items: center;
+  gap: 20px;
   padding: 30px;
+  background: white;
   border-radius: 12px;
+  text-decoration: none;
   border: 1px solid #e2e8f0;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+}
+
+.hub-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 15px rgba(0,0,0,0.05);
+  border-color: var(--primary);
+}
+
+.icon-wrapper {
+  background: #f8fafc;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: background 0.3s, color 0.3s;
+}
+
+.card-content h3 {
+  margin: 0 0 5px 0;
+  color: #1e293b;
+  font-size: 1.2rem;
+}
+
+.card-content p {
+  margin: 0 0 10px 0;
+  color: #64748b;
+  font-size: 0.9rem;
+}
+
+.action-link {
+  font-weight: bold;
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* Cores Específicas por Rede */
+
+/* WhatsApp */
+.hub-card.whatsapp .icon-wrapper { color: #25D366; background: #dcfce7; }
+.hub-card.whatsapp .action-link { color: #25D366; }
+.hub-card.whatsapp:hover { border-color: #25D366; }
+
+/* Instagram */
+.hub-card.instagram .icon-wrapper { color: #E1306C; background: #fce7f3; }
+.hub-card.instagram .action-link { color: #E1306C; }
+.hub-card.instagram:hover { border-color: #E1306C; }
+
+/* Email */
+.hub-card.email .icon-wrapper { color: var(--primary); background: #f1f5f9; }
+.hub-card.email .action-link { color: var(--primary); }
+
+
+/* LOCALIZAÇÃO */
+.location-box {
+  background: #f8fafc;
+  border: 1px dashed #cbd5e1;
+  padding: 20px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  max-width: 500px;
+  margin: 0 auto;
+  text-align: left;
+}
+
+.location-box strong { display: block; color: #333; }
+.location-box p { margin: 0; color: #666; font-size: 0.9rem; }
+
+/* Mobile */
+@media (max-width: 768px) {
+  .hub-card {
+    flex-direction: column;
+    text-align: center;
+    padding: 20px;
+  }
+  
+  .hub-card .action-link {
+    justify-content: center;
+  }
 }

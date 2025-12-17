@@ -14,37 +14,29 @@ export const CartProvider = ({ children }) => {
     localStorage.setItem('cart', JSON.stringify(cart));
   }, [cart]);
 
-  // --- 2. NOVO: VALIDAÇÃO DE ITENS DELETADOS ---
+  // --- VALIDAÇÃO DE ITENS (Sincronização com o Banco) ---
   useEffect(() => {
     const validateCartItems = async () => {
-      // Se o carrinho estiver vazio, não precisa checar nada
       if (cart.length === 0) return;
 
-      // Pega todos os IDs únicos dos produtos que estão no carrinho
       const productIds = [...new Set(cart.map(item => item.id))];
 
       try {
-        // Pergunta ao Supabase quais desses IDs ainda existem no banco
         const { data: validProducts, error } = await supabase
           .from('products')
-          .select('id, price, oldPrice, onSale, stock, name, images') // Trazemos dados frescos
+          .select('id, price, oldPrice, onSale, stock, name, images')
           .in('id', productIds);
 
         if (error) throw error;
 
-        // Se o banco não retornou nada, ou retornou menos itens...
         if (validProducts) {
-          
-          // Filtra o carrinho: Só mantém o item se o ID dele existir na resposta do banco
           const verifiedCart = cart.filter(cartItem => {
             const productStillExists = validProducts.find(p => p.id === cartItem.id);
-            // Também podemos checar se ainda tem estoque!
+            // Verifica se o produto existe e se tem PELO MENOS 1 em estoque
             const hasStock = productStillExists ? productStillExists.stock > 0 : false;
-            
             return productStillExists && hasStock;
           });
 
-          // Opcional: Atualizar preços se mudaram no banco (Sincronização)
           const updatedCart = verifiedCart.map(cartItem => {
              const freshData = validProducts.find(p => p.id === cartItem.id);
              return {
@@ -52,14 +44,14 @@ export const CartProvider = ({ children }) => {
                  price: freshData.price,
                  oldPrice: freshData.oldPrice,
                  onSale: freshData.onSale,
-                 name: freshData.name, // Caso tenha mudado o nome
-                 images: freshData.images
+                 name: freshData.name,
+                 images: freshData.images,
+                 stock: freshData.stock // Importante: Atualizamos o estoque local também
              };
           });
 
-          // Se a quantidade de itens mudou (algum foi deletado) ou preço mudou
           if (JSON.stringify(updatedCart) !== JSON.stringify(cart)) {
-            console.log("Carrinho atualizado: Itens removidos ou atualizados pelo servidor.");
+            console.log("Carrinho atualizado: Itens removidos ou atualizados.");
             setCart(updatedCart);
           }
         }
@@ -69,13 +61,20 @@ export const CartProvider = ({ children }) => {
     };
 
     validateCartItems();
-    
-    // Essa validação roda uma vez ao montar o site. 
-    // Se quiser que rode toda vez que abre o modal, precisaria mover a lógica.
-  }, [cart]);
+  }, [cart]); // Observação: cuidado com loops infinitos aqui, mas a lógica de comparação JSON ajuda.
 
-  // ADICIONAR: Recebe agora também o tamanho e cor escolhidos
+  // --- ADICIONAR COM TRAVA DE ESTOQUE ---
   const addToCart = (product, selectedSize, selectedColor) => {
+    // 1. Conta quantos desse MESMO produto (ID) já estão no carrinho
+    const currentQtyInCart = cart.filter(item => item.id === product.id).length;
+
+    // 2. Verifica se adicionar mais 1 ultrapassa o estoque disponível
+    if (currentQtyInCart + 1 > product.stock) {
+      // Retorna false para indicar que falhou
+      return false;
+    }
+
+    // 3. Se passou, cria o item e adiciona
     const newItem = {
       ...product,
       selectedSize,
@@ -84,14 +83,13 @@ export const CartProvider = ({ children }) => {
     };
     
     setCart(prev => [...prev, newItem]);
+    return true; // Retorna true para indicar sucesso
   };
 
-  // REMOVER: Agora usa o cartId, não o ID do produto
   const removeFromCart = (cartId) => {
     setCart(prev => prev.filter(item => item.cartId !== cartId));
   };
 
-  // Atualiza atributos do item no carrinho
   const updateCartItem = (cartId, field, value) => {
     setCart(prev => prev.map(item => 
       item.cartId === cartId ? { ...item, [field]: value } : item

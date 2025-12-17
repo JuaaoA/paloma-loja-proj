@@ -152,3 +152,138 @@
     padding-top: 10px;
   }
 }
+
+
+/* --- DETALHES DO PEDIDO (ClientOrderDetailsPage) --- */
+
+.order-details-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 25px;
+}
+
+@media (max-width: 768px) {
+  .order-details-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.details-card {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 25px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+}
+
+.details-card h3 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  font-size: 1.1rem;
+  color: #334155;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-bottom: 1px solid #f1f5f9;
+  padding-bottom: 10px;
+}
+
+/* Área de Pagamento (Alerta) */
+.payment-box-alert {
+  background: white;
+  border: 2px solid #d97706; /* Laranja de atenção */
+  border-radius: 12px;
+  padding: 25px;
+}
+
+.payment-box-alert h3 {
+  color: #d97706;
+  margin-top: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pix-copy-row {
+  display: flex;
+  gap: 10px;
+  margin: 15px 0;
+}
+
+.pix-copy-row input {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  background: #f8fafc;
+  color: #64748b;
+  font-family: monospace;
+}
+
+.pix-copy-row button {
+  background: #334155;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 0 15px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-weight: 600;
+}
+
+.whatsapp-action-btn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  
+  width: 100%;
+  box-sizing: border-box; /* <--- O SEGREDO: Isso impede o botão de ficar maior que a caixa */
+  
+  padding: 12px;
+  margin-top: 15px; /* Adiciona um espaço para não grudar no campo de cima */
+  
+  background: #22c55e;
+  color: white;
+  text-decoration: none;
+  font-weight: bold;
+  border-radius: 6px;
+  transition: all 0.2s;
+  cursor: pointer;
+  border: none; /* Garante que não tenha borda padrão se for <button> ou <a> */
+}
+
+.whatsapp-action-btn:hover {
+  background: #16a34a;
+  transform: translateY(-1px); /* Pequeno efeito visual ao passar o mouse */
+  box-shadow: 0 4px 6px rgba(34, 197, 94, 0.2);
+}
+
+/* Lista de Itens Detalhada */
+.detail-item-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid #f1f5f9;
+}
+.detail-item-row strong { display: block; color: #334155; font-size: 0.95rem; }
+.detail-item-row span { font-size: 0.85rem; color: #94a3b8; }
+.detail-item-row .item-price { font-weight: 600; color: #334155; }
+
+.detail-total-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  color: #64748b;
+}
+
+.detail-total-row.final {
+  border-top: 1px dashed #cbd5e1;
+  margin-top: 10px;
+  padding-top: 15px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: var(--primary);
+}

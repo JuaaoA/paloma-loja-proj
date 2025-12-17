@@ -17,7 +17,10 @@ const CatalogPage = () => {
   // --- ESTADOS DOS FILTROS ---
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('Todas');
-  const [priceRange, setPriceRange] = useState({ min: 0, max: 1000 });
+  
+  // Começa com '' (vazio) para não limitar nada antes de carregar
+  const [priceRange, setPriceRange] = useState({ min: 0, max: '' });
+  
   const [selectedColors, setSelectedColors] = useState([]);
   const [selectedSizes, setSelectedSizes] = useState([]);
   const [sortOption, setSortOption] = useState('newest');
@@ -28,7 +31,6 @@ const CatalogPage = () => {
     const fetchProducts = async () => {
       setIsLoading(true);
       try {
-        // select('*, categories(title)') para trazer o objeto da categoria junto
         const { data, error } = await supabase
           .from('products')
           .select('*, categories(title)');
@@ -36,16 +38,19 @@ const CatalogPage = () => {
         if (error) throw error;
 
         if (data) {
-          // NORMALIZAÇÃO DE DADOS
-          // O Supabase retorna: { ...produto, categories: { title: "Vestidos" } }
-          // irá "achatar" isso para facilitar o codigo já existente
           const formattedData = data.map(prod => ({
             ...prod,
-            // Se tiver category_id, usa o título da relação. Se não, usa o texto antigo (fallback)
             category: prod.categories?.title || prod.category 
           }));
           
           setProducts(formattedData);
+
+          // LÓGICA INTELIGENTE:
+          // Detecta o preço mais alto automaticamente
+          if (formattedData.length > 0) {
+            const maxPriceInDB = Math.ceil(Math.max(...formattedData.map(p => p.price)));
+            setPriceRange(prev => ({ ...prev, max: maxPriceInDB }));
+          }
         };
       } catch (error) {
         console.error("Erro ao carregar catálogo:", error.message);
@@ -67,7 +72,13 @@ const CatalogPage = () => {
   const clearFilters = () => {
     setSearchTerm('');
     setSelectedCategory('Todas');
-    setPriceRange({ min: 0, max: 1000 });
+    
+    // Reseta para o maior preço atual (não para 1000)
+    const currentMax = products.length > 0 
+        ? Math.ceil(Math.max(...products.map(p => p.price))) 
+        : 1000;
+    setPriceRange({ min: 0, max: currentMax });
+
     setSelectedColors([]);
     setSelectedSizes([]);
     setSortOption('newest');
@@ -81,7 +92,11 @@ const CatalogPage = () => {
     return products.filter(product => {
       const matchesSearch = normalizeString(product.name).includes(normalizeString(searchTerm));
       const matchesCategory = selectedCategory === 'Todas' || product.category === selectedCategory;
-      const matchesPrice = product.price >= priceRange.min && product.price <= priceRange.max;
+      
+      // Se max for vazio, considera infinito
+      const matchesPrice = product.price >= priceRange.min && 
+                           (priceRange.max === '' || product.price <= priceRange.max);
+      
       const matchesColor = selectedColors.length === 0 || (product.colors && product.colors.some(c => selectedColors.includes(c)));
       const matchesSize = selectedSizes.length === 0 || (product.sizes && product.sizes.some(s => selectedSizes.includes(s)));
       const matchesSale = filterSale ? product.onSale === true : true;
@@ -101,13 +116,9 @@ const CatalogPage = () => {
 
   return (
     <div className="container page-enter">
-      <SEO 
-        title="Catálogo" 
-        description="Confira as novidades em moda feminina, vestidos, conjuntos e muito mais." 
-      />
-      {/* --------------------------------------- */}
-
+      <SEO title="Catálogo" description="Confira as novidades em moda feminina." />
       <Breadcrumbs />
+      
       <div className="catalog-header">
         <h1 style={{fontSize: '1.5rem', fontFamily: 'Times New Roman, serif'}}>Catálogo Completo</h1>
         <span style={{color: '#666'}}>{filteredProducts.length} produtos encontrados</span>
@@ -133,6 +144,21 @@ const CatalogPage = () => {
           </div>
 
           <div className="filter-group">
+            <span className="filter-title">Faixa de Preço</span>
+            <div className="price-range-inputs">
+              <input type="number" className="price-input" placeholder="Min" value={priceRange.min} onChange={e => setPriceRange({...priceRange, min: Number(e.target.value)})}/>
+              <span>até</span>
+              <input 
+                type="number" 
+                className="price-input" 
+                placeholder="Max" 
+                value={priceRange.max} 
+                onChange={e => setPriceRange({...priceRange, max: e.target.value === '' ? '' : Number(e.target.value)})}
+              />
+            </div>
+          </div>
+
+          <div className="filter-group">
             <span className="filter-title">Tamanhos</span>
             <div className="size-filter-options">
               {allSizes.map(size => (
@@ -148,15 +174,6 @@ const CatalogPage = () => {
                 <input type="radio" name="category" checked={selectedCategory === cat} onChange={() => setSelectedCategory(cat)}/> {cat}
               </label>
             ))}
-          </div>
-
-          <div className="filter-group">
-            <span className="filter-title">Faixa de Preço</span>
-            <div className="price-range-inputs">
-              <input type="number" className="price-input" placeholder="Min" value={priceRange.min} onChange={e => setPriceRange({...priceRange, min: Number(e.target.value)})}/>
-              <span>até</span>
-              <input type="number" className="price-input" placeholder="Max" value={priceRange.max} onChange={e => setPriceRange({...priceRange, max: Number(e.target.value)})}/>
-            </div>
           </div>
 
           <div className="filter-group">
@@ -199,8 +216,6 @@ const CatalogPage = () => {
                     </div>
                     
                     <div className="product-info">
-                      
-                      {/* --- BOLINHAS DE CORES --- */}
                       <div className="product-meta" style={{display: 'flex', justifyContent: 'center', gap: '5px', marginBottom: '8px'}}>
                         {product.colors && product.colors.map((color, index) => (
                             <span 
@@ -217,9 +232,7 @@ const CatalogPage = () => {
                             ></span>
                         ))}
                       </div>
-                      
                       <h3>{product.name}</h3>
-                      
                       {product.onSale && product.oldPrice ? (
                           <div style={{display:'flex', alignItems:'center', justifyContent: 'center', gap:'8px'}}>
                               <span style={{textDecoration: 'line-through', color: '#94a3b8', fontSize: '0.9rem'}}>R$ {product.oldPrice.toFixed(2)}</span>
