@@ -24,6 +24,10 @@ import OrderSuccessPage from './pages/OrderSuccessPage';
 import ClientOrdersPage from './pages/ClientOrdersPage';
 import ClientOrderDetailsPage from './pages/ClientOrderDetailsPage';
 
+// Forgot and Update Password Pages
+import ForgotPasswordPage from './pages/ForgotPasswordPage';
+import UpdatePasswordPage from './pages/UpdatePasswordPage';
+
 // Admin routes
 import LoginPage from './pages/Admin/LoginPage';
 import AdminDashboard from './pages/Admin/AdminDashboard';
@@ -54,6 +58,10 @@ function App() {
               <Route path="/contato" element={<ContactPage />} />
 
               <Route path="/login" element={<ClientLoginPage />} />
+
+              {/* Rotas de recuperação e atualização de senha */}
+              <Route path="/recuperar-senha" element={<ForgotPasswordPage />} />
+              <Route path="/atualizar-senha" element={<UpdatePasswordPage />} />
 
               <Route path="/pedido-confirmado/:id" element={<OrderSuccessPage />} />
 

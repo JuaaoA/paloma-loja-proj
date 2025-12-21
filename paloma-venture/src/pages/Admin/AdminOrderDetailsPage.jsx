@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { supabase } from '../../services/supabase';
-import { ArrowLeft, Clock, CheckCircle, Truck, Package, X, MapPin, User, FileText } from 'lucide-react';
+import { ArrowLeft, Clock, CheckCircle, Truck, Package, X, MapPin, User, FileText, Mail, Phone, MessageCircle } from 'lucide-react';
 import Loading from '../../components/Loading';
 import { useToast } from '../../contexts/ToastContext';
 
@@ -11,15 +11,17 @@ const AdminOrderDetailsPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { showToast } = useToast();
+  
   const [order, setOrder] = useState(null);
   const [orderItems, setOrderItems] = useState([]);
+  const [customer, setCustomer] = useState(null); 
   const [loading, setLoading] = useState(true);
 
   // Busca inicial
   useEffect(() => {
     const fetchDetails = async () => {
       try {
-        // 1. Pedido
+        // 1. Busca Pedido
         const { data: orderData, error: orderError } = await supabase
           .from('orders')
           .select('*')
@@ -28,7 +30,7 @@ const AdminOrderDetailsPage = () => {
 
         if (orderError) throw orderError;
 
-        // 2. Itens
+        // 2. Busca Itens
         const { data: itemsData, error: itemsError } = await supabase
           .from('order_items')
           .select('*')
@@ -36,11 +38,26 @@ const AdminOrderDetailsPage = () => {
 
         if (itemsError) throw itemsError;
 
+        // 3. Busca Dados do Cliente na tabela 'profiles'
+        if (orderData.user_id) {
+            // --- CORREÇÃO AQUI ---
+            // Usamos .maybeSingle() em vez de .single()
+            // Isso evita o erro 406 se o perfil não for encontrado ou estiver bloqueado pelo RLS
+            const { data: profileData, error: profileError } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', orderData.user_id)
+            .maybeSingle(); 
+
+            if (!profileError && profileData) {
+                setCustomer(profileData);
+            }
+        }
+
         setOrder(orderData);
         setOrderItems(itemsData);
       } catch (error) {
-        // Evita alert blocking, apenas loga e redireciona se critico
-        console.error("Erro ao buscar pedido:", error);
+        console.error("Erro ao buscar detalhes:", error);
         navigate('/admin/dashboard');
       } finally {
         setLoading(false);
@@ -79,6 +96,15 @@ const AdminOrderDetailsPage = () => {
 
   const currentStatus = statusConfig[order.status] || statusConfig['pending'];
 
+  // Tenta pegar telefone do perfil, se não tiver, pega do endereço de entrega
+  const customerPhone = customer?.phone || order.shipping_address?.phone || order.shipping_address?.celular;
+  
+  const getWhatsappLink = (phone) => {
+    if (!phone) return null;
+    const cleanPhone = phone.replace(/\D/g, ''); 
+    return `https://wa.me/55${cleanPhone}`;
+  };
+
   return (
     <div className="details-page-container page-enter">
       
@@ -96,13 +122,11 @@ const AdminOrderDetailsPage = () => {
         </span>
       </div>
 
-      {/* Grid Principal (Responsivo via CSS) */}
       <div className="details-layout">
         
         {/* Coluna Esquerda: Itens + Status */}
         <div className="details-column">
             
-            {/* Box de Ação (Mudar Status) */}
             <div className="info-card">
                 <h3 className="card-title">
                     <FileText size={20} color="var(--primary)"/> Atualizar Status
@@ -122,7 +146,6 @@ const AdminOrderDetailsPage = () => {
                 </div>
             </div>
 
-            {/* Lista de Itens */}
             <div className="info-card">
                 <h3 className="card-title">Itens do Pedido ({orderItems.length})</h3>
                 <div style={{display:'flex', flexDirection:'column', gap:'15px'}}>
@@ -156,7 +179,6 @@ const AdminOrderDetailsPage = () => {
         {/* Coluna Direita: Endereço + Cliente */}
         <div className="details-column">
             
-            {/* Endereço */}
             <div className="info-card">
                 <h3 className="card-title">
                     <MapPin size={20} color="#64748b"/> Entrega
@@ -176,15 +198,73 @@ const AdminOrderDetailsPage = () => {
                 <p style={{marginTop:'15px', fontWeight:'bold', color:'#334155'}}>CEP: {order.shipping_address.cep}</p>
             </div>
 
-            {/* Info Cliente (Básico) */}
+            {/* --- CARD CLIENTE --- */}
             <div className="info-card">
                 <h3 className="card-title">
-                    <User size={20} color="#64748b"/> Cliente
+                    <User size={20} color="#64748b"/> Dados do Cliente
                 </h3>
-                <p className="text-muted">ID do Usuário:</p>
-                <code style={{background:'#f1f5f9', padding:'4px', borderRadius:'4px', fontSize:'0.8rem', wordBreak: 'break-all'}}>
-                    {order.user_id}
-                </code>
+                
+                {customer ? (
+                    <div style={{display:'flex', flexDirection:'column', gap:'15px'}}>
+                        
+                        {/* Nome */}
+                        <div>
+                            <span className="text-muted" style={{fontSize: '0.85rem'}}>Nome Completo</span>
+                            <div style={{fontWeight: 'bold', color: '#333', fontSize: '1.05rem'}}>
+                                {customer.full_name || order.shipping_address?.name || 'Nome não informado'}
+                            </div>
+                        </div>
+
+                        {/* E-mail */}
+                        <div>
+                            <span className="text-muted" style={{fontSize: '0.85rem'}}>E-mail</span>
+                            <div style={{display:'flex', alignItems:'center', gap:'8px', color: '#333'}}>
+                                <Mail size={16} color="#64748b"/> 
+                                {customer.email}
+                            </div>
+                        </div>
+
+                        {/* Telefone / WhatsApp */}
+                        {customerPhone ? (
+                            <div>
+                                <span className="text-muted" style={{fontSize: '0.85rem'}}>Telefone / WhatsApp</span>
+                                <div style={{display:'flex', alignItems:'center', gap:'8px', marginTop: '4px'}}>
+                                    <Phone size={16} color="#64748b"/> 
+                                    <span>{customerPhone}</span>
+                                </div>
+                                <a 
+                                    href={getWhatsappLink(customerPhone)} 
+                                    target="_blank" 
+                                    rel="noreferrer"
+                                    style={{
+                                        display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
+                                        marginTop: '12px', padding: '10px', borderRadius: '6px',
+                                        background: '#25D366', color: 'white', textDecoration: 'none', 
+                                        fontWeight: 'bold', fontSize: '0.9rem', transition: 'background 0.2s'
+                                    }}
+                                >
+                                    <MessageCircle size={18} /> Chamar no WhatsApp
+                                </a>
+                            </div>
+                        ) : (
+                             <div style={{marginTop: '10px', padding: '10px', background: '#fef2f2', borderRadius: '6px', border: '1px dashed #f87171', color: '#991b1b', fontSize: '0.9rem'}}>
+                                <Phone size={16} style={{marginBottom: '-3px', marginRight: '5px'}}/>
+                                Telefone não informado no cadastro.
+                             </div>
+                        )}
+
+                        <div style={{marginTop: '10px', borderTop: '1px dashed #e2e8f0', paddingTop: '10px'}}>
+                             <span className="text-muted" style={{fontSize: '0.75rem', fontFamily: 'monospace'}}>ID: {customer.id}</span>
+                        </div>
+                    </div>
+                ) : (
+                    <div style={{color: '#64748b', fontStyle: 'italic', padding: '10px', background: '#f8fafc', borderRadius: '8px'}}>
+                        <p style={{marginBottom:'10px'}}>Não foi possível carregar o perfil.</p>
+                        <small>Motivo provável: Segurança do Banco de Dados ou Usuário Deletado.</small>
+                        <br/><br/>
+                        <code style={{background:'#e2e8f0', padding:'2px 4px'}}>{order.user_id}</code>
+                    </div>
+                )}
             </div>
 
         </div>
