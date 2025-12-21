@@ -17,8 +17,9 @@ const ForgotPasswordPage = () => {
     try {
       // O Supabase envia um email com link que redireciona para a página de atualizar
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: 'http://localhost:5173/atualizar-senha', 
+        redirectTo: 'https://paloma-loja-proj.vercel.app/atualizar-senha', 
         // QUANDO FIZER DEPLOY: Mude para 'https://sua-loja.vercel.app/atualizar-senha'
+        // MUDAR PARA LOCALHOST DENOVO QUANDO FOR TESTAR LOCAL: 'http://localhost:5173/atualizar-senha'
       });
 
       if (error) throw error;
