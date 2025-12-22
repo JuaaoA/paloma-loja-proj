@@ -21,7 +21,6 @@ const AdminOrderDetailsPage = () => {
   useEffect(() => {
     const fetchDetails = async () => {
       try {
-        // 1. Busca Pedido
         const { data: orderData, error: orderError } = await supabase
           .from('orders')
           .select('*')
@@ -30,7 +29,6 @@ const AdminOrderDetailsPage = () => {
 
         if (orderError) throw orderError;
 
-        // 2. Busca Itens
         const { data: itemsData, error: itemsError } = await supabase
           .from('order_items')
           .select('*')
@@ -38,11 +36,7 @@ const AdminOrderDetailsPage = () => {
 
         if (itemsError) throw itemsError;
 
-        // 3. Busca Dados do Cliente na tabela 'profiles'
         if (orderData.user_id) {
-            // --- CORREÇÃO AQUI ---
-            // Usamos .maybeSingle() em vez de .single()
-            // Isso evita o erro 406 se o perfil não for encontrado ou estiver bloqueado pelo RLS
             const { data: profileData, error: profileError } = await supabase
             .from('profiles')
             .select('*')
@@ -66,7 +60,6 @@ const AdminOrderDetailsPage = () => {
     fetchDetails();
   }, [id, navigate]);
 
-  // Atualizar Status
   const handleStatusChange = async (newStatus) => {
     try {
       const { error } = await supabase
@@ -79,7 +72,7 @@ const AdminOrderDetailsPage = () => {
       setOrder({ ...order, status: newStatus });
       showToast('Status atualizado com sucesso!', 'success');
     } catch (error) {
-      showToast("Erro ao atualizar status.", error);
+      showToast("Erro ao atualizar status." + error, 'error');
     }
   };
 
@@ -96,7 +89,6 @@ const AdminOrderDetailsPage = () => {
 
   const currentStatus = statusConfig[order.status] || statusConfig['pending'];
 
-  // Tenta pegar telefone do perfil, se não tiver, pega do endereço de entrega
   const customerPhone = customer?.phone || order.shipping_address?.phone || order.shipping_address?.celular;
   
   const getWhatsappLink = (phone) => {
@@ -153,9 +145,29 @@ const AdminOrderDetailsPage = () => {
                         <div key={item.id} className="item-row">
                             <div>
                                 <strong style={{fontSize:'1.05rem', color:'#334155'}}>{item.product_name}</strong>
-                                <div className="text-muted">
-                                    Cor: {item.selected_color} | Tamanho: {item.selected_size}
+                                
+                                {/* --- Cor Visual --- */}
+                                <div className="text-muted" style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '6px' }}>
+                                    Cor:
+                                    {/* Bolinha da Cor */}
+                                    <div 
+                                        style={{
+                                            width: '24px', 
+                                            height: '24px', 
+                                            borderRadius: '50%', 
+                                            backgroundColor: item.selected_color,
+                                            border: '1px solid #cbd5e1', // Borda para cores claras
+                                            boxShadow: '0 1px 2px rgba(0,0,0,0.1)'
+                                        }}
+                                        title={item.selected_color} // Tooltip com o código se passar o mouse
+                                    />
+                                    
+                                    {/* Tamanho */}
+                                    <span style={{ fontSize: '0.95rem', fontWeight: '500', color: '#334155' }}>
+                                        Tamanho: <strong>{item.selected_size}</strong>
+                                    </span>
                                 </div>
+
                             </div>
                             <div className="item-text-right">
                                 <div className="text-bold">
@@ -198,7 +210,6 @@ const AdminOrderDetailsPage = () => {
                 <p style={{marginTop:'15px', fontWeight:'bold', color:'#334155'}}>CEP: {order.shipping_address.cep}</p>
             </div>
 
-            {/* --- CARD CLIENTE --- */}
             <div className="info-card">
                 <h3 className="card-title">
                     <User size={20} color="#64748b"/> Dados do Cliente
@@ -206,8 +217,6 @@ const AdminOrderDetailsPage = () => {
                 
                 {customer ? (
                     <div style={{display:'flex', flexDirection:'column', gap:'15px'}}>
-                        
-                        {/* Nome */}
                         <div>
                             <span className="text-muted" style={{fontSize: '0.85rem'}}>Nome Completo</span>
                             <div style={{fontWeight: 'bold', color: '#333', fontSize: '1.05rem'}}>
@@ -215,7 +224,6 @@ const AdminOrderDetailsPage = () => {
                             </div>
                         </div>
 
-                        {/* E-mail */}
                         <div>
                             <span className="text-muted" style={{fontSize: '0.85rem'}}>E-mail</span>
                             <div style={{display:'flex', alignItems:'center', gap:'8px', color: '#333'}}>
@@ -224,7 +232,6 @@ const AdminOrderDetailsPage = () => {
                             </div>
                         </div>
 
-                        {/* Telefone / WhatsApp */}
                         {customerPhone ? (
                             <div>
                                 <span className="text-muted" style={{fontSize: '0.85rem'}}>Telefone / WhatsApp</span>
@@ -260,8 +267,6 @@ const AdminOrderDetailsPage = () => {
                 ) : (
                     <div style={{color: '#64748b', fontStyle: 'italic', padding: '10px', background: '#f8fafc', borderRadius: '8px'}}>
                         <p style={{marginBottom:'10px'}}>Não foi possível carregar o perfil.</p>
-                        <small>Motivo provável: Segurança do Banco de Dados ou Usuário Deletado.</small>
-                        <br/><br/>
                         <code style={{background:'#e2e8f0', padding:'2px 4px'}}>{order.user_id}</code>
                     </div>
                 )}

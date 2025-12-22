@@ -4,7 +4,7 @@ import { supabase } from '../services/supabase';
 import { ArrowLeft, MapPin, Package, Clock, CheckCircle, Truck, X, Copy, ExternalLink, FileText } from 'lucide-react';
 import Loading from '../components/Loading';
 import { useToast } from '../contexts/ToastContext';
-import './Style/ClientOrders.css'; // reutilizar e expandir o CSS existente
+import './Style/ClientOrders.css';
 
 const ClientOrderDetailsPage = () => {
   const { id } = useParams();
@@ -135,7 +135,27 @@ const ClientOrderDetailsPage = () => {
                     <div key={item.id} className="detail-item-row">
                         <div>
                             <strong>{item.product_name}</strong>
-                            <span>{item.selected_color} | {item.selected_size}</span>
+                            
+                            {/* --- VISUAL DA COR --- */}
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '6px' }}>
+                                {/* Bolinha da Cor */}
+                                <div 
+                                    style={{
+                                        width: '20px', 
+                                        height: '20px', 
+                                        borderRadius: '50%', 
+                                        backgroundColor: item.selected_color,
+                                        border: '1px solid #cbd5e1', // Borda sutil para cores claras
+                                        boxShadow: '0 1px 2px rgba(0,0,0,0.1)'
+                                    }}
+                                    title={item.selected_color} 
+                                />
+                                {/* Tamanho */}
+                                <span style={{ fontSize: '0.9rem', color: '#64748b' }}>
+                                    <strong>Tamanho: {item.selected_size}</strong>
+                                </span>
+                            </div>
+
                         </div>
                         <div className="item-price">
                            {item.quantity}x R$ {item.price_at_purchase.toFixed(2)}
